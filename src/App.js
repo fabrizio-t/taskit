@@ -1,5 +1,8 @@
 import React from 'react';
 import './App.css';
+import Home from './pages/Home.js';
+import Projects from './pages/Projects.js';
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 
 function App() {
   return (
@@ -10,13 +13,21 @@ function App() {
           <div className='logo'>TasKit</div>
           <div className='navigation'>
             <a href="/">Home</a>
-            <a href="/task">Task</a>
+            <a href="/projects">Projects</a>
           </div>
         </div>
       </div>
       <div className='container'>
         <div className='content'>
-          <h2>Welcome</h2>
+          <BrowserRouter>
+            <Routes>
+              <Route path="/">
+                <Route index element={<Home />} />
+                <Route path="projects" element={<Projects />} />
+                <Route path="*" element={<Home />} />
+              </Route>
+            </Routes>
+          </BrowserRouter>
         </div>
       </div>
     </>
