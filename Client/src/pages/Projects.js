@@ -1,9 +1,18 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
+import { apiSend } from '../utils/services.js'
 
 function Projects() {
-    const { user } = useAuth0();
 
+    const { user, getAccessTokenSilently } = useAuth0();
+    async function getProjects() {
+        const accessToken = await getAccessTokenSilently();
+        apiSend('/api/messages/protected', 'GET', accessToken)
+            .then(data => {
+                console.log("GET PROTECTED MESSAGE: ", data);
+            });
+    }
+    getProjects();
     if (!user) {
         return null;
     }
