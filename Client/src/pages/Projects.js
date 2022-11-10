@@ -5,14 +5,28 @@ import { apiSend } from '../utils/services.js'
 function Projects() {
 
     const { user, getAccessTokenSilently } = useAuth0();
-    async function getProjects() {
+
+    async function saveUser({ sub, nickname, picture, email }) {
+        const accessToken = await getAccessTokenSilently();
+        console.log("----->", accessToken)
+
+        apiSend('/user', 'POST', accessToken, { sub, nickname, picture, email })
+            .then(data => {
+                console.log("RESPONSE: ", data);
+            });
+    }
+    /* async function getProjects() {
         const accessToken = await getAccessTokenSilently();
         apiSend('/api/messages/protected', 'GET', accessToken)
             .then(data => {
                 console.log("GET PROTECTED MESSAGE: ", data);
             });
     }
-    getProjects();
+
+    getProjects(); */
+
+    if (user) saveUser(user);
+
     if (!user) {
         return null;
     }
