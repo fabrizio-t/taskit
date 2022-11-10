@@ -49,3 +49,26 @@ body {
   font-size: 18;
   margin-right: 15px
 }
+
+.loader {
+  width: 60px;
+  height: 60px;
+  align-self: center;
+  background-color: #1d3557;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.loader img {
+  animation: rotation 2s infinite linear;
+}
+
+@keyframes rotation {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(359deg);
+  }
+}
