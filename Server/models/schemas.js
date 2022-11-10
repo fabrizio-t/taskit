@@ -51,6 +51,10 @@ const userSchema = new Schema({
 const users = mongoose.model('User', userSchema);
 
 const taskSchema = new Schema({
+    project_id: {
+        type: String,
+        required: true
+    },
     sub: { // "sub" field from auth0 = user unique id
         type: String,
         required: true
@@ -69,7 +73,7 @@ const taskSchema = new Schema({
     },
     color: {
         type: String,
-        required: true
+        required: false
     },
     tags: {
         type: [],
