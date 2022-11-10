@@ -67,7 +67,7 @@ exports.getTasks = async (req, res) => {
         else {
             status = 'error';
             message = 'The project does not exists or the user is not authorized';
-            res.status(200).json({ status, message });
+            res.status(400).json({ status, message });
         }
     } catch (e) {
         res.status(500).send(e);
@@ -78,7 +78,8 @@ exports.saveTasks = async (req, res) => {
     let err = []
     //if (!req.body.project_id) err.push("Project_id");
     const project_id = req.params.pid;
-    console.log("POST A TASK IN PROJECT:", project_id)
+    const sub = req.auth.payload.sub;//unique user Id from auth0
+
     if (!req.body.name) err.push("Name");
     if (!req.body.deadline) err.push("Deadline");
     if (!req.body.todos) err.push("Todos");
@@ -86,13 +87,37 @@ exports.saveTasks = async (req, res) => {
     if (!req.body.tags) err.push("Tags");
     if (!req.body.priority) err.push("Priority");
     if (err.length > 0) return res.status(400).send('{"error":"One or more parameters are missing: ' + err.join(', ') + '"}');
+
     console.log(req.body);
-    console.log("USER ID:", req.auth.payload.sub);
-    const sub = req.auth.payload.sub;//unique user Id from auth0
+
+    //Let's check is project exists and user is authorized to create tasks
+    let where = {
+        _id: project_id,
+        deadline: {
+            $gte: new Date().toISOString(),
+        },
+        $or: [{ sub }, { collabs: sub }]
+    };
+
+    let proj = null;
     try {
-        data = await tasks.create({ project_id, ...req.body, sub });
-        status = 'success';
-        res.status(200).json({ status, data });
+        proj = await projects.findOne(where).sort({ deadline: 1 });
+    } catch (e) {
+        res.status(500).send(e);
+    }
+
+    //We are authorized, let's create a task
+    try {
+        if (proj) {
+            data = await tasks.create({ project_id, ...req.body, sub });
+            status = 'success';
+            res.status(200).json({ status, data });
+        }
+        else {
+            status = 'error';
+            message = 'The project does not exists or the user is not authorized';
+            res.status(400).json({ status, message });
+        }
     } catch (e) {
         res.status(500).send(e);
     }
