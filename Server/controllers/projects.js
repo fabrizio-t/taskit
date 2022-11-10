@@ -33,6 +33,8 @@ exports.saveProjects = async (req, res) => {
     } catch (e) {
         r = e
         res.status(500).send(e);
-
     }
+}
+exports.getMessage = async (req, res) => {
+    res.status(200).json(JSON.stringify(req.auth));
 }

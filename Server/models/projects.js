@@ -21,6 +21,5 @@ const schema = new Schema({
 
 const projects = mongoose.model('Project', schema);
 
-
 module.exports = projects;
 
