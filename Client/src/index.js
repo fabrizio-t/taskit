@@ -7,12 +7,21 @@ import reportWebVitals from './reportWebVitals';
 import { Auth0ProviderWithHistory } from "./auth0/auth0-provider-with-history";
 import { BrowserRouter } from "react-router-dom";
 
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import reducers from './state/reducers';
+
+let store = createStore(reducers, window.__REDUX_DEVTOOLS_EXTENSION__ &&
+  window.__REDUX_DEVTOOLS_EXTENSION__());
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   /* <React.StrictMode> */
   <BrowserRouter>
     <Auth0ProviderWithHistory>
-      <App />
+      <Provider store={store}>
+        <App />
+      </Provider>
     </Auth0ProviderWithHistory>
   </BrowserRouter>
   /* </React.StrictMode> */
