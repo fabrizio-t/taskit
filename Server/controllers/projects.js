@@ -126,7 +126,7 @@ exports.getTasks = async (req, res) => {
 
     let r;
     try {
-        data = await projects.find(where).sort({ deadline: 1 });
+        data = await projects.findOne(where).sort({ deadline: 1 });
         if (data) {
             const t = await tasks.find({ project_id }).sort({ deadline: 1 });
             /* data['tasks'] = [];

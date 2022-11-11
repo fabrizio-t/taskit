@@ -19,3 +19,10 @@ export const registerUserAndGetProjects = async (accessToken, { sub, nickname, p
     const data = await apiSend('/projects', 'GET', accessToken);
     return data;
 }
+
+export const formInitial = () => ({
+    name: '',
+    deadline: '',
+    color: '',
+    priority: ''
+});

@@ -89,3 +89,119 @@ body {
   color: rgb(92, 90, 90);
   font-size: 15px;
 }
+
+.section {
+  background-color: rgb(255, 255, 255);
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+  width: 100%;
+}
+
+.taskcnt {
+  display: flex;
+  align-items: center;
+}
+
+.tasknum {
+  font-size: 20px;
+  font-weight: bold;
+  /* margin-right: 10px; */
+  text-align: center;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}
+
+.taskedit {
+  width: 100%;
+  font-size: 18px
+}
+
+.taskedit p {
+  padding: 0px !important;
+  margin: 5px !important;
+}
+
+.green {
+  border: 1px solid green;
+  padding: 0px !important;
+}
+
+.red {
+  border: 1px solid red;
+  padding: 0px !important;
+}
+
+.neutral {
+  border: 1px solid lightgray;
+  padding: 0px !important;
+}
+
+.neutral .tasknum,
+.taskedit {
+  padding: 5px;
+}
+
+.red .tasknum,
+.taskedit {
+  padding: 5px;
+}
+
+.green .tasknum,
+.taskedit {
+  padding: 5px;
+}
+
+.neutral .tasknum {
+  background-color: lightgray;
+  border-radius: 3px 0px 0px 3px;
+}
+
+.red .tasknum {
+  background-color: rgb(230, 198, 198);
+  border-radius: 3px 0px 0px 3px;
+}
+
+.green .tasknum {
+  background-color: rgb(169, 236, 174);
+  border-radius: 3px 0px 0px 3px;
+}
+
+.red .tasknum::before {
+  content: "❌";
+}
+
+.green .tasknum::before {
+  content: "✅";
+}
+
+.neutral .tasknum::before {
+  content: "🔘";
+}
+
+.itemContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.delete::before {
+  content: "🗑️";
+}
+
+.hide {
+  display: none
+}
+
+.accTitle {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-content: space-between;
+  align-items: center;
+}
+
+.spaceUp {
+  margin-top: 10px;
+}

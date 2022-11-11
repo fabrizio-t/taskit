@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
-import { apiSend, registerUserAndGetProjects } from '../utils/services.js'
+import { apiSend, formInitial } from '../utils/services.js'
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -31,6 +31,8 @@ function Tasks() {
     const [description, setEditorValue] = useState('');
     //Value of form
     const [form, setForm] = useState({ name: '', deadline: new Date().toISOString().slice(0, 16), color: '#fff', priority: "0" });
+    //Edit mode
+    const [editMode, setEditMode] = useState({ mode: false, id: null });
     //Get user details from auth0
     const { user, getAccessTokenSilently } = useAuth0();
 
@@ -40,9 +42,9 @@ function Tasks() {
 
     const initialize = async () => {
         try {
-            //console.log("TOKEN:", token)
+            console.log("TOKEN:", token)
             const res = await apiSend('/projects/' + _id, 'GET', token);
-            //console.log("TASKS:", res.data)
+            console.log("TASKS:", res.data)
             dispatch({ type: 'Tsk_update', data: res.data });
         }
         catch (e) {
@@ -55,16 +57,27 @@ function Tasks() {
         setOpen(!open);
     };
 
+    //New Task
+    const newTask = () => {
+        setEditMode({ mode: false, id: null });
+        setForm(formInitial());
+        toggleDialog();
+    };
+
     //Create New Task
     const saveTask = async (event) => {
 
-        //console.log("TOKEN:", token);
         const { name, deadline, color, priority } = form;
-        const data = await apiSend('/projects/' + _id, 'POST', token, { name, deadline, color, priority, todos: [], tags: [] });
-        //console.log("SAVING NEW TASK: ", data);
+        let data = null;
+        if (!editMode.mode) data = await apiSend('/projects/' + _id, 'POST', token, { name, deadline, color, priority, todos: [], tags: [] });
+        else if (editMode.id) data = await apiSend('/projects/' + _id + '/task/' + editMode.id, 'PUT', token, { name, deadline, color, priority, todos: [], tags: [] });
+        //refresh data
         const res = await apiSend('/projects/' + _id, 'GET', token);
-        //console.log("REFRESHING TASKS DATA: ", res.data);
         dispatch({ type: 'Tsk_update', data: res.data });
+
+        setEditMode({ mode: false, id: null });
+        setForm(formInitial());
+
         toggleDialog();
         event.preventDefault();
     };
@@ -85,14 +98,26 @@ function Tasks() {
         dispatch({ type: 'Tsk_update', data: res.data });
     }
 
+    const editTask = async (index) => {
+        setEditMode({ mode: true, id: projectTasks.tasks[index]._id });
+        setForm({
+            name: projectTasks.tasks[index].name,
+            deadline: projectTasks.tasks[index].deadline,
+            color: projectTasks.tasks[index].color,
+            priority: projectTasks.tasks[index].priority
+        });
+
+        toggleDialog();
+    }
+
     if (!user) {
         return null;
     }
 
     return (
         <>
-            <h2>Project: {_id}</h2>
-            <Button onClick={toggleDialog}>New Task</Button>
+            <h2>Project: {projectTasks.title}</h2>
+            <Button onClick={newTask}>New Task</Button>
             <form>
                 <Dialog
                     open={open}
@@ -128,20 +153,54 @@ function Tasks() {
                 </Dialog>
             </form>
             <section>
-                {projectTasks.tasks.map((t, i) => <Task task={t} key={i} deleteTask={deleteTask} />)}
+                {projectTasks.tasks.map((t, i) => <Task task={t} key={i} index={i} deleteTask={deleteTask} editTask={editTask} />)}
             </section>
         </>
     );
 };
 
 
-function Task({ task, deleteTask }) {
+function Task({ task, deleteTask, editTask, index }) {
     return (
         <>
-
             <div className="project">
-                <div className="prj_date">{task.deadline} <button onClick={() => deleteTask(task._id)}>Delete</button></div>
+                <div className="prj_date">
+                    {task.deadline}
+                    <button onClick={() => deleteTask(task._id)}>Delete</button>
+                    <button onClick={() => editTask(index)}>Edit</button>
+                </div>
                 <h2>{task.name}</h2>
+                <div>
+                    {task.todos.map((t, i) => <Todo todo={t} index={i} />)}
+                </div>
+            </div>
+        </>
+    );
+}
+
+function Todo({ todo, index }) {
+
+    let [style, setStyle] = useState(todo.status);
+    const handleStyle = () => {
+        console.log(style);
+        if (style === 'neutral') style = 'green';
+        else if (style === 'green') style = 'red';
+        else if (style === 'red') style = 'neutral';
+        setStyle(style);
+    }
+
+    return (
+        <>
+            <div className='itemContainer'>
+                <div className={`section ${style}`}>
+                    <div className='taskcnt'>
+                        <div className='tasknum' onClick={handleStyle}>#{index + 1}</div>
+                        <div className='taskedit' dangerouslySetInnerHTML={{ __html: todo.value }} onClick={() => { }}>
+                            {/*  {todo.value} */}
+                        </div>
+                    </div>
+                </div>
+                <div className={'delete'} onClick={() => { }}></div>
             </div>
         </>
     );
