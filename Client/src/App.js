@@ -3,6 +3,7 @@ import './App.css';
 import Home from './pages/Home.js';
 import Projects from './pages/Projects.js';
 import Profile from './pages/Profile.js';
+import Tasks from './pages/Tasks.js';
 import { CallbackPage } from "./pages/callback-page";
 import { PageLoader } from "./pages/page-loader";
 import { Switch, Route } from "react-router-dom";
@@ -31,6 +32,7 @@ function App() {
         <div className='content'>
           <Switch>
             <Route path="/" exact component={Home} />
+            <Route path="/projects/:_id" component={Tasks} />
             <Route path="/projects" component={Projects} />
             <Route path="/profile" component={Profile} />
             <Route path="/callback" component={CallbackPage} />

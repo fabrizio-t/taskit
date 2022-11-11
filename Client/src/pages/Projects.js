@@ -1,6 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
 import { apiSend, registerUserAndGetProjects } from '../utils/services.js'
+import { Link } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
@@ -27,7 +28,8 @@ function Projects() {
     //Value of form
     const [form, setForm] = useState({ title: '', deadline: new Date().toISOString().slice(0, 16) });
     //Save access token
-    const [token, setToken] = useState('');
+    /* const [token, setToken] = useState(''); */
+    const token = useSelector(state => state.token);
     //Get user details from auth0
     const { user, getAccessTokenSilently } = useAuth0();
 
@@ -35,11 +37,11 @@ function Projects() {
         if (user) initialize();
     }, [user]);
 
-
     const initialize = async () => {
         try {
             const accessToken = await getAccessTokenSilently();
-            setToken(accessToken);
+            //console.log("TOKEN ----->", accessToken);
+            dispatch({ type: 'Token', data: accessToken });
             const data = await registerUserAndGetProjects(accessToken, user);
             dispatch({ type: 'Prj_update', data });
         }
@@ -63,9 +65,9 @@ function Projects() {
         //event.target.
         const { title, deadline } = form;
         const data = await apiSend('/projects', 'POST', token, { title, deadline, description });
-        console.log("SAVING PROJECT: ", data);
+        //console.log("SAVING PROJECT: ", data);
         const res = await apiSend('/projects', 'GET', token);
-        console.log("REFRESHING PROJECT DATA: ", res);
+        //console.log("REFRESHING PROJECT DATA: ", res);
         dispatch({ type: 'Prj_update', data: res });
         toggleDialog();
         event.preventDefault();
@@ -76,14 +78,13 @@ function Projects() {
             f[event.target.name] = event.target.value;
             return f;
         })
-        console.log("form:", form);
     }
 
     const deleteProject = async (id) => {
         const data = await apiSend(`/projects/${id}`, 'DELETE', token);
-        console.log("DELETING PROJECT: ", data);
+        //console.log("DELETING PROJECT: ", data);
         const res = await apiSend('/projects', 'GET', token);
-        console.log("REFRESHING PROJECT DATA: ", res);
+        //console.log("REFRESHING PROJECT DATA: ", res);
         dispatch({ type: 'Prj_update', data: res });
     }
 
@@ -139,7 +140,9 @@ function Project({ project, deleteProject }) {
 
             <div className="project">
                 <div className="prj_date">{project.deadline} <button onClick={() => deleteProject(project._id)}>Delete</button></div>
-                <h2>{project.title}</h2>
+                <Link to={"/projects/" + project._id}>
+                    <h2>{project.title}</h2>
+                </Link>
                 <div dangerouslySetInnerHTML={{ __html: project.description }}></div>
             </div>
         </>

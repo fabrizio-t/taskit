@@ -126,7 +126,7 @@ exports.getTasks = async (req, res) => {
 
     let r;
     try {
-        data = await projects.findOne(where).sort({ deadline: 1 });
+        data = await projects.find(where).sort({ deadline: 1 });
         if (data) {
             const t = await tasks.find({ project_id }).sort({ deadline: 1 });
             /* data['tasks'] = [];
@@ -161,8 +161,8 @@ exports.saveTasks = async (req, res) => {
     console.log(req.body);
 
     //Let's check is project exists and user is authorized to create tasks
-
-    const proj = await verifyProjectPermission(project_id, sub, projects, false);
+    const isStrict = false
+    const proj = await verifyProjectPermission(project_id, sub, projects, isStrict);
 
     //We are authorized, let's create a task
     try {
