@@ -71,6 +71,7 @@ function Projects() {
 
     //Create New project
     const saveProject = async (event) => {
+        console.log("saving date:", event.target.deadline.value);
         event.preventDefault();
         let data;
         if (!editor.mode) {
@@ -105,9 +106,10 @@ function Projects() {
 
     const editProject = (id) => {
         const pId = projects.findIndex(p => p._id === id);
+        console.log("loading date:", projects[pId].deadline.substr(0, projects[pId].deadline.length - 8));
         setForm(f => {
             f.title = projects[pId].title;
-            f.deadline = projects[pId].deadline;
+            f.deadline = projects[pId].deadline.substr(0, projects[pId].deadline.length - 8);
             return f;
         });
         setEditorValue(projects[pId].description);

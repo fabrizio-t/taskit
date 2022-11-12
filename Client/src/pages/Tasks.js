@@ -88,6 +88,8 @@ function Tasks() {
     const saveTask = async (event) => {
 
         const { name, deadline, color, priority } = form;
+        console.log("saving date:", deadline.substr(0, deadline - 8));
+
         let data = null;
         if (!editMode.mode) data = await apiSend('/projects/' + _id, 'POST', token, { name, deadline, color, priority, todos: [], tags: [] });
         else if (editMode.id) data = await apiSend('/projects/' + _id + '/task/' + editMode.id, 'PUT', token, { name, deadline, color, priority });
@@ -123,11 +125,11 @@ function Tasks() {
         const index = projectTasks.tasks.findIndex(t => t._id === id);
         setForm({
             name: projectTasks.tasks[index].name,
-            deadline: projectTasks.tasks[index].deadline,
+            deadline: projectTasks.tasks[index].deadline.substr(0, projectTasks.tasks[index].deadline.length - 8),
             color: projectTasks.tasks[index].color,
             priority: projectTasks.tasks[index].priority
         });
-
+        console.log("loading date:", projectTasks.tasks[index].deadline.substr(0, projectTasks.tasks[index].deadline.length - 8));
         toggleDialog();
     }
 
