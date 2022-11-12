@@ -23,6 +23,8 @@ function Projects() {
     const dispatch = useDispatch();
     //Dialog Window
     const [open, setOpen] = useState(false);
+    //Editor Mode - define mode when saving project
+    const [editor, editorMode] = useState({ mode: false, id: null });
     //Value of ReactQuill Text Editor
     const [description, setEditorValue] = useState('');
     //Value of form
@@ -57,30 +59,41 @@ function Projects() {
 
     //Create New project
     const newProject = () => {
+        setForm(f => {
+            f.title = '';
+            f.deadline = '';
+            return f;
+        });
+        setEditorValue('');
+        editorMode({ mode: false, id: null });
         toggleDialog();
     };
 
     //Create New project
     const saveProject = async (event) => {
         event.preventDefault();
-        const data = await apiSend('/projects', 'POST', token,
-            {
-                title: event.target.title.value,
-                deadline: event.target.deadline.value,
-                description
-            });
+        let data;
+        if (!editor.mode) {
+            data = await apiSend('/projects', 'POST', token,
+                {
+                    title: event.target.title.value,
+                    deadline: event.target.deadline.value,
+                    description
+                });
+        }
+        else {
+            data = await apiSend('/projects/' + editor.id, 'PUT', token,
+                {
+                    title: event.target.title.value,
+                    deadline: event.target.deadline.value,
+                    description
+                });
+        }
         console.log("API RESPONSE: ", data);
         const res = await apiSend('/projects', 'GET', token);
         dispatch({ type: 'Prj_update', data: res });
         toggleDialog();
     };
-
-    /*     const setProject = (event) => {
-            setForm(f => {
-                f[event.target.name] = event.target.value;
-                return f;
-            })
-        } */
 
     const deleteProject = async (id) => {
         const data = await apiSend(`/projects/${id}`, 'DELETE', token);
@@ -88,6 +101,18 @@ function Projects() {
         const res = await apiSend('/projects', 'GET', token);
         //console.log("REFRESHING PROJECT DATA: ", res);
         dispatch({ type: 'Prj_update', data: res });
+    }
+
+    const editProject = (id) => {
+        const pId = projects.findIndex(p => p._id === id);
+        setForm(f => {
+            f.title = projects[pId].title;
+            f.deadline = projects[pId].deadline;
+            return f;
+        });
+        setEditorValue(projects[pId].description);
+        editorMode({ mode: true, id });
+        toggleDialog();
     }
 
     if (!user) {
@@ -132,20 +157,20 @@ function Projects() {
             </Dialog>
 
             <section>
-                {projects.map((p, i) => <Project project={p} key={i} deleteProject={deleteProject} />)}
+                {projects.map((p, i) => <Project project={p} key={i} deleteProject={deleteProject} editProject={editProject} />)}
             </section>
         </>
     );
 };
 
 
-function Project({ project, deleteProject }) {
+function Project({ project, deleteProject, editProject }) {
     return (
         <>
-
             <div className="project">
                 <div className="prj_date">
-                    <div><button onClick={() => deleteProject(project._id)}>❌</button></div>
+                    <div><button onClick={() => deleteProject(project._id)}>❌</button>
+                        <button onClick={() => editProject(project._id)}>🛠️</button></div>
                     <div>{getFullDate(project.deadline)}</div>
                 </div>
                 <Link to={"/projects/" + project._id}>
