@@ -6,15 +6,21 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 
+//------------------Text Editor ReactQuill--------------------
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
+//------------------Material UI--------------------
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+/* import ExpandMoreIcon from '@mui/icons-material/ExpandMore'; */
 
 import Todos from "./../components/Todos";
 
@@ -225,8 +231,8 @@ function Task({ task, deleteTask, editTask, index, newTodo, editTodo }) {
 
     return (
         <>
-            <div className="project">
-                <div className="prj_date">
+            <div className="mb">
+                {/*  <div className="prj_date">
                     {task.deadline}
                     <button onClick={() => deleteTask(task._id)}>Delete</button>
                     <button onClick={() => editTask(index)}>Edit</button>
@@ -235,7 +241,30 @@ function Task({ task, deleteTask, editTask, index, newTodo, editTodo }) {
                 <div>
                     <Button onClick={() => newTodo(index)}>New Todo</Button>
                     <Todos todos={task.todos} taskIndex={index} editTodo={editTodo} />
-                </div>
+                </div> */}
+
+                <Accordion>
+                    <AccordionSummary
+                        expandIcon={'➕'}
+                        aria-controls="panel1a-content"
+                        id="panel1a-header"
+                    >
+                        <div className="mb">
+                            <div className="prj_date">
+                                {task.deadline}
+                                <button onClick={() => deleteTask(task._id)}>Delete</button>
+                                <button onClick={() => editTask(index)}>Edit</button>
+                            </div>
+                            <div><h2>{task.name}</h2></div>
+                        </div>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <div>
+                            <Button onClick={() => newTodo(index)}>New Todo</Button>
+                            <Todos todos={task.todos} taskIndex={index} editTodo={editTodo} />
+                        </div>
+                    </AccordionDetails>
+                </Accordion>
             </div>
         </>
     );
