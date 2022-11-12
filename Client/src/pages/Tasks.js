@@ -6,17 +6,17 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 
-//------------------Text Editor ReactQuill--------------------
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 
-//------------------Material UI--------------------
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+
+import Todos from "./../components/Todos";
 
 function Tasks() {
     //Project ID we are operating in
@@ -27,12 +27,15 @@ function Tasks() {
     const dispatch = useDispatch();
     //Dialog Window
     const [open, setOpen] = useState(false);
-    //Value of ReactQuill Text Editor
-    const [description, setEditorValue] = useState('');
+    const [openTask, setOpenTask] = useState(false);
     //Value of form
     const [form, setForm] = useState({ name: '', deadline: new Date().toISOString().slice(0, 16), color: '#fff', priority: "0" });
+    //Value of ReactQuill Text Editor
+    const [description, setEditorValue] = useState('');
     //Edit mode
     const [editMode, setEditMode] = useState({ mode: false, id: null });
+    //Todo mode
+    const [editModeTodo, setEditModeTodo] = useState({ mode: false, index: null, todoIndex: null });
     //Get user details from auth0
     const { user, getAccessTokenSilently } = useAuth0();
 
@@ -56,6 +59,9 @@ function Tasks() {
     const toggleDialog = () => {
         setOpen(!open);
     };
+    const toggleTask = () => {
+        setOpenTask(!openTask);
+    };
 
     //New Task
     const newTask = () => {
@@ -70,7 +76,7 @@ function Tasks() {
         const { name, deadline, color, priority } = form;
         let data = null;
         if (!editMode.mode) data = await apiSend('/projects/' + _id, 'POST', token, { name, deadline, color, priority, todos: [], tags: [] });
-        else if (editMode.id) data = await apiSend('/projects/' + _id + '/task/' + editMode.id, 'PUT', token, { name, deadline, color, priority, todos: [], tags: [] });
+        else if (editMode.id) data = await apiSend('/projects/' + _id + '/task/' + editMode.id, 'PUT', token, { name, deadline, color, priority });
         //refresh data
         const res = await apiSend('/projects/' + _id, 'GET', token);
         dispatch({ type: 'Tsk_update', data: res.data });
@@ -109,6 +115,39 @@ function Tasks() {
 
         toggleDialog();
     }
+
+    const newTodo = async (index) => {
+        setEditModeTodo({ mode: false, index, todoIndex: null })
+        toggleTask();
+    };
+    const editTodo = async (index, todoIndex) => {
+        setEditModeTodo({ mode: true, index, todoIndex })
+        setEditorValue(projectTasks.tasks[index].todos[todoIndex].value);
+        toggleTask();
+    };
+
+    const saveTodo = async () => {
+
+        let index = editModeTodo.index;
+        let todoIndex = editModeTodo.index;
+        let updatedTodos = projectTasks.tasks[index].todos.slice();
+        let taskid = projectTasks.tasks[index]._id;
+        console.log("PROJ", projectTasks);
+
+        if (!editModeTodo.mode) {
+            updatedTodos.push({ id: Date.now(), status: 'neutral', value: description });
+        }
+        else {
+            updatedTodos[todoIndex].value = description;
+        }
+        let data = await apiSend('/projects/' + _id + '/task/' + taskid, 'PUT', token, { todos: updatedTodos });
+        console.log("DATA:", data);
+        //refresh data
+        const res = await apiSend('/projects/' + _id, 'GET', token);
+        dispatch({ type: 'Tsk_update', data: res.data });
+
+        toggleTask();
+    };
 
     if (!user) {
         return null;
@@ -151,16 +190,39 @@ function Tasks() {
                         </Button>
                     </DialogActions>
                 </Dialog>
+
+                <Dialog
+                    open={openTask}
+                    onClose={toggleTask}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Todo:"}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                        </DialogContentText>
+                        <ReactQuill theme="snow" value={description} onChange={setEditorValue} />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={toggleTask}>Cancel</Button>
+                        <Button onClick={saveTodo} autoFocus>
+                            Save
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </form>
             <section>
-                {projectTasks.tasks.map((t, i) => <Task task={t} key={i} index={i} deleteTask={deleteTask} editTask={editTask} />)}
+                {projectTasks.tasks.map((t, i) => <Task task={t} key={i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} />)}
             </section>
         </>
     );
 };
 
 
-function Task({ task, deleteTask, editTask, index }) {
+function Task({ task, deleteTask, editTask, index, newTodo, editTodo }) {
+
     return (
         <>
             <div className="project">
@@ -171,14 +233,15 @@ function Task({ task, deleteTask, editTask, index }) {
                 </div>
                 <h2>{task.name}</h2>
                 <div>
-                    {task.todos.map((t, i) => <Todo todo={t} index={i} />)}
+                    <Button onClick={() => newTodo(index)}>New Todo</Button>
+                    <Todos todos={task.todos} taskIndex={index} editTodo={editTodo} />
                 </div>
             </div>
         </>
     );
 }
 
-function Todo({ todo, index }) {
+/* function Todo({ todo, index }) {
 
     let [style, setStyle] = useState(todo.status);
     const handleStyle = () => {
@@ -196,7 +259,6 @@ function Todo({ todo, index }) {
                     <div className='taskcnt'>
                         <div className='tasknum' onClick={handleStyle}>#{index + 1}</div>
                         <div className='taskedit' dangerouslySetInnerHTML={{ __html: todo.value }} onClick={() => { }}>
-                            {/*  {todo.value} */}
                         </div>
                     </div>
                 </div>
@@ -204,6 +266,6 @@ function Todo({ todo, index }) {
             </div>
         </>
     );
-}
+} */
 
 export default Tasks

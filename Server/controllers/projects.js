@@ -187,7 +187,7 @@ exports.updateTasks = async (req, res) => {
     const task_id = req.params.tid;
     const sub = req.auth.payload.sub;//unique user Id from auth0
 
-    let err = [];
+    /* let err = [];
     if (!req.body.name) err.push("Name");
     if (!req.body.deadline) err.push("Deadline");
     if (!req.body.todos) err.push("Todos");
@@ -195,7 +195,7 @@ exports.updateTasks = async (req, res) => {
     if (!req.body.tags) err.push("Tags");
     if (!req.body.priority) err.push("Priority");
     if (err.length > 0) return res.status(400).send('{"error":"One or more parameters are missing: ' + err.join(', ') + '"}');
-
+ */
     console.log(req.body);
 
     //Let's check is project exists and user is authorized to create tasks

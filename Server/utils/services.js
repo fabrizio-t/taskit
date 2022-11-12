@@ -8,7 +8,7 @@ async function verifyProjectPermission(project_id, sub, projects, strict = true)
     try {
         return await projects.findOne(where).sort({ deadline: 1 });
     } catch (e) {
-        res.status(500).send(e);
+        return e;
     }
 }
 
