@@ -62,23 +62,25 @@ function Projects() {
 
     //Create New project
     const saveProject = async (event) => {
-        //event.target.
-        const { title, deadline } = form;
-        const data = await apiSend('/projects', 'POST', token, { title, deadline, description });
-        //console.log("SAVING PROJECT: ", data);
+        event.preventDefault();
+        const data = await apiSend('/projects', 'POST', token,
+            {
+                title: event.target.title.value,
+                deadline: event.target.deadline.value,
+                description
+            });
+        console.log("API RESPONSE: ", data);
         const res = await apiSend('/projects', 'GET', token);
-        //console.log("REFRESHING PROJECT DATA: ", res);
         dispatch({ type: 'Prj_update', data: res });
         toggleDialog();
-        event.preventDefault();
     };
 
-    const setProject = (event) => {
-        setForm(f => {
-            f[event.target.name] = event.target.value;
-            return f;
-        })
-    }
+    /*     const setProject = (event) => {
+            setForm(f => {
+                f[event.target.name] = event.target.value;
+                return f;
+            })
+        } */
 
     const deleteProject = async (id) => {
         const data = await apiSend(`/projects/${id}`, 'DELETE', token);
@@ -94,37 +96,41 @@ function Projects() {
 
     return (
         <>
-            <Button onClick={newProject}>New Project</Button>
-            <form onSubmit={saveProject}>
-                <Dialog
-                    open={open}
-                    onClose={toggleDialog}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                >
-                    <DialogTitle id="alert-dialog-title">
-                        {"Project:"}
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id="alert-dialog-description">
-                        </DialogContentText>
+            <div className="button_cnt">
+                <div><Button variant="contained" onClick={newProject}>New Project</Button></div>
+            </div>
+
+            <Dialog
+                open={open}
+                onClose={toggleDialog}
+                aria-labelledby="alert-dialog-title"
+                aria-describedby="alert-dialog-description"
+            >
+                <DialogTitle id="alert-dialog-title">
+                    {"Project:"}
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id="alert-dialog-description">
+                    </DialogContentText>
+                    <form id="new_project" onSubmit={saveProject}>{/* saveProject testData*/}
                         <div className="form">
                             <label>Title</label>
-                            <input type="text" name="title" defaultValue={form.title} onChange={setProject}></input>
+                            <input type="text" name="title" defaultValue={form.title} ></input>
                             <label>Description</label>
                             <ReactQuill theme="snow" value={description} onChange={setEditorValue} />
                             <label>Deadline</label>
-                            <input type='datetime-local' name='deadline' defaultValue={form.deadline} onChange={setProject} />
+                            <input type='datetime-local' name='deadline' defaultValue={form.deadline} />
                         </div>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={toggleDialog}>Cancel</Button>
-                        <Button onClick={saveProject} autoFocus>
-                            Save
-                        </Button>
-                    </DialogActions>
-                </Dialog>
-            </form>
+                    </form>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={toggleDialog}>Cancel</Button>
+                    <Button form='new_project' type="submit" autoFocus>
+                        Save
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
             <section>
                 {projects.map((p, i) => <Project project={p} key={i} deleteProject={deleteProject} />)}
             </section>

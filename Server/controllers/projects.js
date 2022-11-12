@@ -9,7 +9,7 @@ exports.getProjects = async (req, res) => {
 
     let where = {
         deadline: {
-            $gte: new Date().toISOString(),
+            $gte: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),//new Date().toISOString(),
         },
         $or: [{ sub }, { collabs: sub }]
     };
@@ -28,7 +28,7 @@ exports.saveProjects = async (req, res) => {
     let err = []
     if (!req.body.title) err.push("Title");
     if (!req.body.deadline) err.push("Date");
-    if (!req.body.description) err.push("Venue");
+    if (!req.body.description) err.push("Description");
     if (err.length > 0) return res.status(400).send('{"error":"One or more parameters are missing: ' + err.join(', ') + '"}');
     console.log(req.body);
     console.log("USER ID:", req.auth.payload.sub);
@@ -116,21 +116,23 @@ exports.getTasks = async (req, res) => {
     const project_id = req.params.pid;
     const sub = req.auth.payload.sub;
 
-    let where = {
-        _id: project_id,
-        deadline: {
-            $gte: new Date().toISOString(),
-        },
-        $or: [{ sub }, { collabs: sub }]
-    };
-
     let r;
     try {
-        data = await projects.findOne(where).sort({ deadline: 1 });
+        //Check if project exists and user is authorized
+        data = await projects.findOne({
+            _id: project_id,
+            $or: [{ sub }, { collabs: sub }]
+        });
+
         if (data) {
-            const t = await tasks.find({ project_id }).sort({ deadline: 1 });
-            /* data['tasks'] = [];
-            data['tasks'] = t; */
+            //Retrieve data
+            let where = {
+                project_id,
+                deadline: {
+                    $gte: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
+                }
+            };
+            const t = await tasks.find(where).sort({ deadline: 1 });
             status = 'successo';
             res.status(200).json({ status, data: { ...data._doc, tasks: t } });
         }

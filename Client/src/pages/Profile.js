@@ -13,7 +13,7 @@ function Projects() {
         <>
             <div className="content-layout">
                 <h1 id="page-title" className="content__title">
-                    Project Page
+                    Profile
                 </h1>
                 <div className="content__body">
                     <div className="profile-grid">
@@ -24,12 +24,13 @@ function Projects() {
                                 className="profile__avatar"
                             />
                             <div className="profile__headline">
-                                <h2 className="profile__title">{user.name}</h2>
-                                <span className="profile__description">{user.email}</span>
+                                <div className="profile__description"><b>Name:</b> {user.name}</div>
+                                <div className="profile__description"><b>Email:</b> {user.email}</div>
+                                <div className="profile__description"><b>User ID:</b> {user.sub}</div>
                             </div>
                         </div>
                         <div className="profile__details">
-                            {JSON.stringify(user, null, 2)}
+                            {/* {JSON.stringify(user, null, 2)} */}
                         </div>
                     </div>
                 </div>

@@ -21,6 +21,9 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
+/* import DeleteIcon from '@mui/icons-material/Delete';
+import SendIcon from '@mui/icons-material/Send';
+import Stack from '@mui/material/Stack'; */
 /* import ExpandMoreIcon from '@mui/icons-material/ExpandMore'; */
 
 import Todos from "./../components/Todos";
@@ -36,13 +39,13 @@ function Tasks() {
     const [open, setOpen] = useState(false);
     const [openTask, setOpenTask] = useState(false);
     //Value of form
-    const [form, setForm] = useState({ name: '', deadline: new Date().toISOString().slice(0, 16), color: '#fff', priority: "0" });
+    const [form, setForm] = useState({ name: '', deadline: new Date().toISOString().slice(0, 16), color: '#fff', priority: 0 });
     //Value of ReactQuill Text Editor
     const [description, setEditorValue] = useState('');
     //Edit mode
     const [editMode, setEditMode] = useState({ mode: false, id: null });
     //Todo mode
-    const [editModeTodo, setEditModeTodo] = useState({ mode: false, index: null, todoIndex: null });
+    const [editModeTodo, setEditModeTodo] = useState({ mode: false, taskId: null, todoId: null });
     //Task view mode
     const [view, setView] = useState(true);
     //Get user details from auth0
@@ -58,7 +61,7 @@ function Tasks() {
         try {
             console.log("TOKEN:", token)
             const res = await apiSend('/projects/' + _id, 'GET', token);
-            console.log("TASKS:", res.data)
+            console.log("API RESPONSE:", res);
             dispatch({ type: 'Tsk_update', data: res.data });
         }
         catch (e) {
@@ -115,8 +118,9 @@ function Tasks() {
         dispatch({ type: 'Tsk_update', data: res.data });
     }
 
-    const editTask = async (index) => {
-        setEditMode({ mode: true, id: projectTasks.tasks[index]._id });
+    const editTask = async (id) => {
+        setEditMode({ mode: true, id });
+        const index = projectTasks.tasks.findIndex(t => t._id === id);
         setForm({
             name: projectTasks.tasks[index].name,
             deadline: projectTasks.tasks[index].deadline,
@@ -127,22 +131,27 @@ function Tasks() {
         toggleDialog();
     }
 
-    const newTodo = async (index) => {
-        setEditModeTodo({ mode: false, index, todoIndex: null })
+    const newTodo = async (taskId) => {
+        setEditorValue('');
+        setEditModeTodo({ mode: false, taskId, todoId: null })
         toggleTask();
     };
-    const editTodo = async (index, todoIndex) => {
-        setEditModeTodo({ mode: true, index, todoIndex })
-        setEditorValue(projectTasks.tasks[index].todos[todoIndex].value);
+
+    const editTodo = async (taskId, todoId) => {
+        setEditModeTodo({ mode: true, taskId, todoId })
+        console.log("---->", taskId, todoId)
+        const taskIndex = projectTasks.tasks.findIndex(t => t._id === taskId);
+        const todoIndex = projectTasks.tasks[taskIndex].todos.findIndex(t => t.id === todoId);
+        setEditorValue(projectTasks.tasks[taskIndex].todos[todoIndex].value);
         toggleTask();
     };
 
     const saveTodo = async () => {
 
-        let index = editModeTodo.index;
-        let todoIndex = editModeTodo.index;
-        let updatedTodos = projectTasks.tasks[index].todos.slice();
-        let taskid = projectTasks.tasks[index]._id;
+        const taskIndex = projectTasks.tasks.findIndex(t => t._id === editModeTodo.taskId);
+        const todoIndex = projectTasks.tasks[taskIndex].todos.findIndex(t => t.id === editModeTodo.todoId);
+        let updatedTodos = projectTasks.tasks[taskIndex].todos.slice();
+        let taskid = editModeTodo.taskId;
         console.log("PROJ", projectTasks);
 
         if (!editModeTodo.mode) {
@@ -166,7 +175,16 @@ function Tasks() {
 
     return (
         <>
-            <h2>Project: {projectTasks.title}</h2>
+            <div className="page_nav">
+                <div>
+                    <Link to="/projects">
+                        <Button variant="outlined" startIcon={'⬅️'}>
+                            Back
+                        </Button>
+                    </Link>
+                </div>
+                <div><h2>Project: {projectTasks.title}</h2></div>
+            </div>
             <div className="button_cnt">
                 <div><Button variant="contained" onClick={newTask}>New Task</Button></div>
                 <div>
@@ -202,9 +220,9 @@ function Tasks() {
                             <input type='text' name='color' defaultValue={form.color} onChange={setValue}></input>
                             <label>Priority</label>
                             <select name="priority" onChange={setValue}>
-                                <option value="0">Low</option>
-                                <option value="1">Medium</option>
-                                <option value="2">High</option>
+                                <option value={0} selected={form.priority == 0}>Low</option>
+                                <option value={1} selected={form.priority == 1}>Medium</option>
+                                <option value={2} selected={form.priority == 2}>High</option>
                             </select>
                         </div>
                     </DialogContent>
@@ -240,7 +258,7 @@ function Tasks() {
             </form>
             {!view ?
                 <section>
-                    {projectTasks.tasks.map((t, i) => <Task task={t} key={i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} />)}
+                    {projectTasks.tasks.map((t, i) => <Task task={t} key={'l' + i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} />)}
                 </section>
                 : ''
             }
@@ -252,13 +270,8 @@ function Tasks() {
                                 {getShortDate(new Date().setDate(new Date().getDate() + i))}
                             </div>
                             <div className="calendar_cnt">
-                                {/*  {console.log(tIndex)}
-                            {getShortDate(projectTasks.tasks[tIndex].deadline) == getShortDate(new Date().setDate(new Date().getDate() + i))
-                                ? 'there is a task here'
-                                : tIndex++// = Math.min(projectTasks.tasks.length, tIndex + 1)
-                            } */}
                                 {projectTasks.tasks.filter(t => getShortDate(t.deadline) == getShortDate(new Date().setDate(new Date().getDate() + i))).map((t, i) => (
-                                    <Task task={t} key={i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} />)
+                                    <Task task={t} key={'c' + i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} />)
                                 )}
                             </div>
                         </div>)
@@ -277,7 +290,7 @@ function Task({ task, deleteTask, editTask, index, newTodo, editTodo }) {
         <>
             <div className="mb">
 
-                <Accordion>
+                <Accordion key={'a' + index}>
                     <AccordionSummary
                         expandIcon={'➕'}
                         aria-controls="panel1a-content"
@@ -287,7 +300,7 @@ function Task({ task, deleteTask, editTask, index, newTodo, editTodo }) {
                             <div className="prj_date">
                                 <div>
                                     <button onClick={() => deleteTask(task._id)}>❌</button>
-                                    <button onClick={() => editTask(index)}>🛠️</button>
+                                    <button onClick={() => editTask(task._id)}>🛠️</button>
                                 </div>
                                 <div>{getFullDate(task.deadline)}</div>
                             </div>
@@ -296,8 +309,8 @@ function Task({ task, deleteTask, editTask, index, newTodo, editTodo }) {
                     </AccordionSummary>
                     <AccordionDetails>
                         <div>
-                            <Button variant="outlined" onClick={() => newTodo(index)}>New Todo</Button>
-                            <Todos todos={task.todos} taskIndex={index} editTodo={editTodo} />
+                            <Button variant="outlined" onClick={() => newTodo(task._id)}>New Todo</Button>
+                            <Todos key={'t' + index} todos={task.todos} taskId={task._id} editTodo={editTodo} />
                         </div>
                     </AccordionDetails>
                 </Accordion>
@@ -305,32 +318,5 @@ function Task({ task, deleteTask, editTask, index, newTodo, editTodo }) {
         </>
     );
 }
-
-/* function Todo({ todo, index }) {
-
-    let [style, setStyle] = useState(todo.status);
-    const handleStyle = () => {
-        console.log(style);
-        if (style === 'neutral') style = 'green';
-        else if (style === 'green') style = 'red';
-        else if (style === 'red') style = 'neutral';
-        setStyle(style);
-    }
-
-    return (
-        <>
-            <div className='itemContainer'>
-                <div className={`section ${style}`}>
-                    <div className='taskcnt'>
-                        <div className='tasknum' onClick={handleStyle}>#{index + 1}</div>
-                        <div className='taskedit' dangerouslySetInnerHTML={{ __html: todo.value }} onClick={() => { }}>
-                        </div>
-                    </div>
-                </div>
-                <div className={'delete'} onClick={() => { }}></div>
-            </div>
-        </>
-    );
-} */
 
 export default Tasks
