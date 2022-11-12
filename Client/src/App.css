@@ -93,6 +93,12 @@ body {
   margin: 5px;
 }
 
+.button_cnt {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px;
+}
+
 .prj_date {
   text-align: right;
   color: rgb(92, 90, 90);
@@ -139,7 +145,7 @@ body {
 
 .taskedit {
   width: 100%;
-  font-size: 18px
+  font-size: 15px
 }
 
 .taskedit p {
@@ -240,8 +246,8 @@ body {
 .calendar_day {
   width: 20%;
   min-width: 289px;
-  border: 1px solid lightgray;
-  margin: 0px;
+  /*   border: 1px solid lightgray; */
+  margin: 2px;
   padding: 0px;
 }
 
@@ -250,6 +256,7 @@ body {
   border-radius: 4px;
   padding: 5px;
   color: white;
+  margin-bottom: 10px;
 }
 
 .calendar_cnt {

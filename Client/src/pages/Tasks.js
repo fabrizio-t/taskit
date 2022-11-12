@@ -12,6 +12,7 @@ import 'react-quill/dist/quill.snow.css';
 
 //------------------Material UI--------------------
 import Button from '@mui/material/Button';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
@@ -42,6 +43,8 @@ function Tasks() {
     const [editMode, setEditMode] = useState({ mode: false, id: null });
     //Todo mode
     const [editModeTodo, setEditModeTodo] = useState({ mode: false, index: null, todoIndex: null });
+    //Task view mode
+    const [view, setView] = useState(true);
     //Get user details from auth0
     const { user, getAccessTokenSilently } = useAuth0();
 
@@ -86,6 +89,7 @@ function Tasks() {
         if (!editMode.mode) data = await apiSend('/projects/' + _id, 'POST', token, { name, deadline, color, priority, todos: [], tags: [] });
         else if (editMode.id) data = await apiSend('/projects/' + _id + '/task/' + editMode.id, 'PUT', token, { name, deadline, color, priority });
         //refresh data
+        console.log("API Response:", data);
         const res = await apiSend('/projects/' + _id, 'GET', token);
         dispatch({ type: 'Tsk_update', data: res.data });
 
@@ -101,7 +105,6 @@ function Tasks() {
             f[event.target.name] = event.target.value;
             return f;
         })
-        console.log("form:", form);
     }
 
     const deleteTask = async (id) => {
@@ -164,7 +167,19 @@ function Tasks() {
     return (
         <>
             <h2>Project: {projectTasks.title}</h2>
-            <Button onClick={newTask}>New Task</Button>
+            <div className="button_cnt">
+                <div><Button variant="contained" onClick={newTask}>New Task</Button></div>
+                <div>
+                    <ButtonGroup
+                        disableElevation
+                        variant="contained"
+                        aria-label="Disabled elevation buttons"
+                    >
+                        <Button onClick={() => setView(true)}>Calendar</Button>
+                        <Button onClick={() => setView(false)}>List</Button>
+                    </ButtonGroup>
+                </div>
+            </div>
             <form>
                 <Dialog
                     open={open}
@@ -223,28 +238,34 @@ function Tasks() {
                     </DialogActions>
                 </Dialog>
             </form>
-            <section>
-                {projectTasks.tasks.map((t, i) => <Task task={t} key={i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} />)}
-            </section>
-            <section className="calendar">
-                {Array.from(Array(30).keys()).map(i => (
-                    <div className="calendar_day">
-                        <div className="calendar_date">
-                            {getShortDate(new Date().setDate(new Date().getDate() + i))}
-                        </div>
-                        <div className="calendar_cnt">
-                            {/*  {console.log(tIndex)}
+            {!view ?
+                <section>
+                    {projectTasks.tasks.map((t, i) => <Task task={t} key={i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} />)}
+                </section>
+                : ''
+            }
+            {view ?
+                <section className="calendar">
+                    {Array.from(Array(30).keys()).map(i => (
+                        <div className="calendar_day">
+                            <div className="calendar_date">
+                                {getShortDate(new Date().setDate(new Date().getDate() + i))}
+                            </div>
+                            <div className="calendar_cnt">
+                                {/*  {console.log(tIndex)}
                             {getShortDate(projectTasks.tasks[tIndex].deadline) == getShortDate(new Date().setDate(new Date().getDate() + i))
                                 ? 'there is a task here'
                                 : tIndex++// = Math.min(projectTasks.tasks.length, tIndex + 1)
                             } */}
-                            {projectTasks.tasks.filter(t => getShortDate(t.deadline) == getShortDate(new Date().setDate(new Date().getDate() + i))).map((t, i) => (
-                                <Task task={t} key={i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} />)
-                            )}
-                        </div>
-                    </div>)
-                )}
-            </section>
+                                {projectTasks.tasks.filter(t => getShortDate(t.deadline) == getShortDate(new Date().setDate(new Date().getDate() + i))).map((t, i) => (
+                                    <Task task={t} key={i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} />)
+                                )}
+                            </div>
+                        </div>)
+                    )}
+                </section>
+                : ''
+            }
         </>
     );
 };
@@ -275,7 +296,7 @@ function Task({ task, deleteTask, editTask, index, newTodo, editTodo }) {
                     </AccordionSummary>
                     <AccordionDetails>
                         <div>
-                            <Button onClick={() => newTodo(index)}>New Todo</Button>
+                            <Button variant="outlined" onClick={() => newTodo(index)}>New Todo</Button>
                             <Todos todos={task.todos} taskIndex={index} editTodo={editTodo} />
                         </div>
                     </AccordionDetails>
