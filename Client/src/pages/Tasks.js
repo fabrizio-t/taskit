@@ -45,6 +45,8 @@ function Tasks() {
     //Get user details from auth0
     const { user, getAccessTokenSilently } = useAuth0();
 
+    var tIndex = 0;
+
     useEffect(() => {
         if (token) initialize();
     }, [token]);
@@ -225,7 +227,23 @@ function Tasks() {
                 {projectTasks.tasks.map((t, i) => <Task task={t} key={i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} />)}
             </section>
             <section className="calendar">
-                {Array.from(Array(30).keys()).map(i => <div className="calendar_day"><div className="calendar_date">{getShortDate(new Date().setDate(new Date().getDate() + i))}</div><div className="calendar_cnt"></div></div>)}
+                {Array.from(Array(30).keys()).map(i => (
+                    <div className="calendar_day">
+                        <div className="calendar_date">
+                            {getShortDate(new Date().setDate(new Date().getDate() + i))}
+                        </div>
+                        <div className="calendar_cnt">
+                            {/*  {console.log(tIndex)}
+                            {getShortDate(projectTasks.tasks[tIndex].deadline) == getShortDate(new Date().setDate(new Date().getDate() + i))
+                                ? 'there is a task here'
+                                : tIndex++// = Math.min(projectTasks.tasks.length, tIndex + 1)
+                            } */}
+                            {projectTasks.tasks.filter(t => getShortDate(t.deadline) == getShortDate(new Date().setDate(new Date().getDate() + i))).map((t, i) => (
+                                <Task task={t} key={i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} />)
+                            )}
+                        </div>
+                    </div>)
+                )}
             </section>
         </>
     );
