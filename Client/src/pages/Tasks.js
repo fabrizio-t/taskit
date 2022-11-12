@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
-import { apiSend, formInitial } from '../utils/services.js'
+import { apiSend, formInitial, getShortDate, getFullDate } from '../utils/services.js'
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -176,18 +176,20 @@ function Tasks() {
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
                         </DialogContentText>
-                        <label>Title</label>
-                        <input type="text" name="name" defaultValue={form.name} onChange={setValue}></input>
-                        <label>Deadline</label>
-                        <input type='datetime-local' name='deadline' defaultValue={form.deadline} onChange={setValue} />
-                        <label>Color</label>
-                        <input type='text' name='color' defaultValue={form.color} onChange={setValue}></input>
-                        <label>Priority</label>
-                        <select name="priority" onChange={setValue}>
-                            <option value="0">Low</option>
-                            <option value="1">Medium</option>
-                            <option value="2">High</option>
-                        </select>
+                        <div className="form">
+                            <label>Title</label>
+                            <input type="text" name="name" defaultValue={form.name} onChange={setValue}></input>
+                            <label>Deadline</label>
+                            <input type='datetime-local' name='deadline' defaultValue={form.deadline} onChange={setValue} />
+                            <label>Color</label>
+                            <input type='text' name='color' defaultValue={form.color} onChange={setValue}></input>
+                            <label>Priority</label>
+                            <select name="priority" onChange={setValue}>
+                                <option value="0">Low</option>
+                                <option value="1">Medium</option>
+                                <option value="2">High</option>
+                            </select>
+                        </div>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={toggleDialog}>Cancel</Button>
@@ -222,6 +224,9 @@ function Tasks() {
             <section>
                 {projectTasks.tasks.map((t, i) => <Task task={t} key={i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} />)}
             </section>
+            <section className="calendar">
+                {Array.from(Array(30).keys()).map(i => <div className="calendar_day"><div className="calendar_date">{getShortDate(new Date().setDate(new Date().getDate() + i))}</div><div className="calendar_cnt"></div></div>)}
+            </section>
         </>
     );
 };
@@ -232,16 +237,6 @@ function Task({ task, deleteTask, editTask, index, newTodo, editTodo }) {
     return (
         <>
             <div className="mb">
-                {/*  <div className="prj_date">
-                    {task.deadline}
-                    <button onClick={() => deleteTask(task._id)}>Delete</button>
-                    <button onClick={() => editTask(index)}>Edit</button>
-                </div>
-                <h2>{task.name}</h2>
-                <div>
-                    <Button onClick={() => newTodo(index)}>New Todo</Button>
-                    <Todos todos={task.todos} taskIndex={index} editTodo={editTodo} />
-                </div> */}
 
                 <Accordion>
                     <AccordionSummary
@@ -251,11 +246,13 @@ function Task({ task, deleteTask, editTask, index, newTodo, editTodo }) {
                     >
                         <div className="mb">
                             <div className="prj_date">
-                                {task.deadline}
-                                <button onClick={() => deleteTask(task._id)}>Delete</button>
-                                <button onClick={() => editTask(index)}>Edit</button>
+                                <div>
+                                    <button onClick={() => deleteTask(task._id)}>❌</button>
+                                    <button onClick={() => editTask(index)}>🛠️</button>
+                                </div>
+                                <div>{getFullDate(task.deadline)}</div>
                             </div>
-                            <div><h2>{task.name}</h2></div>
+                            <div><h3>{task.name}</h3></div>
                         </div>
                     </AccordionSummary>
                     <AccordionDetails>

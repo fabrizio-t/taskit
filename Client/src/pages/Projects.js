@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
-import { apiSend, registerUserAndGetProjects } from '../utils/services.js'
+import { apiSend, registerUserAndGetProjects, getFullDate } from '../utils/services.js'
 import { Link } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -108,15 +108,14 @@ function Projects() {
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
                         </DialogContentText>
-
-                        <label>Title</label>
-                        <input type="text" name="title" defaultValue={form.title} onChange={setProject}></input>
-                        <label>Description</label>
-                        <ReactQuill theme="snow" value={description} onChange={setEditorValue} />
-                        <label>Deadline</label>
-                        <input type='datetime-local' name='deadline' defaultValue={form.deadline} onChange={setProject} />
-                        <button>Submit</button>
-
+                        <div className="form">
+                            <label>Title</label>
+                            <input type="text" name="title" defaultValue={form.title} onChange={setProject}></input>
+                            <label>Description</label>
+                            <ReactQuill theme="snow" value={description} onChange={setEditorValue} />
+                            <label>Deadline</label>
+                            <input type='datetime-local' name='deadline' defaultValue={form.deadline} onChange={setProject} />
+                        </div>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={toggleDialog}>Cancel</Button>
@@ -139,7 +138,10 @@ function Project({ project, deleteProject }) {
         <>
 
             <div className="project">
-                <div className="prj_date">{project.deadline} <button onClick={() => deleteProject(project._id)}>Delete</button></div>
+                <div className="prj_date">
+                    <div><button onClick={() => deleteProject(project._id)}>❌</button></div>
+                    <div>{getFullDate(project.deadline)}</div>
+                </div>
                 <Link to={"/projects/" + project._id}>
                     <h2>{project.title}</h2>
                 </Link>

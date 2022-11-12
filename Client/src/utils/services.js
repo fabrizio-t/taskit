@@ -26,3 +26,27 @@ export const formInitial = () => ({
     color: '',
     priority: ''
 });
+
+export function getShortDate(d) {
+
+    const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sept", "Oct", "Nov", "Dec"];
+    let date = new Date(d);
+    let day = '' + date.getDate();
+    if (day.substring(-1) === '1') day = day + "st";
+    else if (day.substring(-1) === '2') day = day + "nd";
+    else if (day.substring(-1) === '3') day = day + "rd";
+    else day = day + "th";
+
+    return day + ' ' + months[date.getMonth()];
+}
+
+export function getFullDate(d) {
+
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    let date = new Date(d);
+    let time = date.toLocaleString('en-UK', { hour: 'numeric', minute: 'numeric', hour12: true });
+    let month = months[date.getMonth()]
+    let day = getShortDate(d).split(" ")[0];
+    let year = date.getFullYear();
+    return `${day} ${month}, ${year}`;//${time} -
+}
