@@ -6,6 +6,11 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 
+//------------------My components--------------------
+import Todos from "./../components/Todos";
+import User from "./../components/User";
+import Vmenu from "./../components/Vmenu";
+
 //------------------Text Editor ReactQuill--------------------
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -171,8 +176,12 @@ function Project({ project, deleteProject, editProject }) {
         <>
             <div className="project">
                 <div className="prj_date">
-                    <div><button onClick={() => deleteProject(project._id)}>❌</button>
-                        <button onClick={() => editProject(project._id)}>🛠️</button></div>
+                    <div>
+                        {/* <button onClick={() => deleteProject(project._id)}>❌</button>
+                        <button onClick={() => editProject(project._id)}>🛠️</button> */}
+                        <Vmenu edit={editProject} del={deleteProject} id={project._id} />
+                        <User user={project.owner}></User>
+                    </div>
                     <div>{getFullDate(project.deadline)}</div>
                 </div>
                 <Link to={"/projects/" + project._id}>

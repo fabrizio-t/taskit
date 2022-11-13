@@ -16,7 +16,7 @@ exports.getProjects = async (req, res) => {
 
     let r;
     try {
-        r = await projects.find(where).sort({ deadline: 1 });
+        r = await projects.find(where).populate('owner').sort({ deadline: 1 });
         res.status(200).json(r);
     } catch (e) {
         res.status(500).send(e);
@@ -35,7 +35,8 @@ exports.saveProjects = async (req, res) => {
     const sub = req.auth.payload.sub;//unique user Id from auth0
     let r;
     try {
-        r = await projects.create({ ...req.body, sub });
+        const user = await users.findOne({ sub });
+        r = await projects.create({ owner: user._id, ...req.body, sub });
         res.status(201).json(r);
     } catch (e) {
         res.status(500).send(e);
@@ -122,7 +123,7 @@ exports.getTasks = async (req, res) => {
         data = await projects.findOne({
             _id: project_id,
             $or: [{ sub }, { collabs: sub }]
-        });
+        }).populate('owner');
 
         if (data) {
             //Retrieve data
@@ -132,8 +133,8 @@ exports.getTasks = async (req, res) => {
                     $gte: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
                 }
             };
-            const t = await tasks.find(where).sort({ deadline: 1 });
-            status = 'successo';
+            const t = await tasks.find(where).populate('user').sort({ deadline: 1 });
+            status = 'success';
             res.status(200).json({ status, data: { ...data._doc, tasks: t } });
         }
         else {
@@ -147,11 +148,11 @@ exports.getTasks = async (req, res) => {
 }
 
 exports.saveTasks = async (req, res) => {
-    let err = []
-    //if (!req.body.project_id) err.push("Project_id");
+
     const project_id = req.params.pid;
     const sub = req.auth.payload.sub;//unique user Id from auth0
 
+    let err = [];
     if (!req.body.name) err.push("Name");
     if (!req.body.deadline) err.push("Deadline");
     if (!req.body.todos) err.push("Todos");
@@ -165,11 +166,11 @@ exports.saveTasks = async (req, res) => {
     //Let's check is project exists and user is authorized to create tasks
     const isStrict = false
     const proj = await verifyProjectPermission(project_id, sub, projects, isStrict);
-
+    const user = await users.findOne({ sub });
     //We are authorized, let's create a task
     try {
         if (proj) {
-            data = await tasks.create({ project_id, ...req.body, sub });
+            data = await tasks.create({ project_id, user: user._id, ...req.body, sub });
             status = 'success';
             res.status(200).json({ status, data });
         }

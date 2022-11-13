@@ -121,12 +121,21 @@ body {
   justify-content: space-between;
 }
 
-.prj_date button {
-  background-color: white;
-  border: 1px solid lightgray;
-  border-radius: 4px;
-  padding: 4px;
+.prj_date div {
+  display: flex;
+  align-items: center;
+}
+
+.prj_date div>* {
   margin-right: 5px;
+}
+
+.prj_date button {
+  /* background-color: white;
+  border: 1px solid lightgray;
+  border-radius: 4px; */
+  padding: 4px;
+  margin: 0px
 }
 
 .form label {
@@ -279,4 +288,14 @@ body {
 
 .css-o4b71y-MuiAccordionSummary-content {
   margin: 0px !important;
+}
+
+.user_img {
+  max-width: 30px;
+  max-height: 30px;
+  border-radius: 50%;
+}
+
+.user {
+  font-weight: bold;
 }

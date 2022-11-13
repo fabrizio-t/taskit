@@ -17,6 +17,7 @@ export const apiSend = (endpoint, method, token, body) => {
 export const registerUserAndGetProjects = async (accessToken, { sub, nickname, picture, email }) => {
     await apiSend('/user', 'POST', accessToken, { sub, nickname, picture, email });
     const data = await apiSend('/projects', 'GET', accessToken);
+    console.log("API RESPONSE:", data);
     return data;
 }
 

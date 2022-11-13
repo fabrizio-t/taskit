@@ -5,6 +5,7 @@ const mongoose = require('./index.js');
 const Schema = mongoose.Schema;
 
 const projectSchema = new Schema({
+    owner: { type: Schema.Types.ObjectId, ref: 'User' },
     title: {
         type: String,
         required: true
@@ -55,7 +56,8 @@ const taskSchema = new Schema({
         type: String,
         required: true
     },
-    sub: { // "sub" field from auth0 = user unique id
+    user: { type: Schema.Types.ObjectId, ref: 'User' },
+    sub: { // "sub" field from auth0
         type: String,
         required: true
     },

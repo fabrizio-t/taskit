@@ -6,6 +6,11 @@ import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 
+//------------------My components--------------------
+import Todos from "./../components/Todos";
+import User from "./../components/User";
+import Vmenu from "./../components/Vmenu";
+import Progress from "./../components/Progress";
 //------------------Text Editor ReactQuill--------------------
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -21,12 +26,11 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 /* import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
 import Stack from '@mui/material/Stack'; */
 /* import ExpandMoreIcon from '@mui/icons-material/ExpandMore'; */
-
-import Todos from "./../components/Todos";
 
 function Tasks() {
     //Project ID we are operating in
@@ -202,6 +206,7 @@ function Tasks() {
             </div>
             <form>
                 <Dialog
+                    key='task_new_edit'
                     open={open}
                     onClose={toggleDialog}
                     aria-labelledby="alert-dialog-title"
@@ -222,9 +227,9 @@ function Tasks() {
                             <input type='text' name='color' defaultValue={form.color} onChange={setValue}></input>
                             <label>Priority</label>
                             <select name="priority" onChange={setValue}>
-                                <option value={0} selected={form.priority == 0}>Low</option>
-                                <option value={1} selected={form.priority == 1}>Medium</option>
-                                <option value={2} selected={form.priority == 2}>High</option>
+                                <option value={0} selected={form.priority === 0}>Low</option>
+                                <option value={1} selected={form.priority === 1}>Medium</option>
+                                <option value={2} selected={form.priority === 2}>High</option>
                             </select>
                         </div>
                     </DialogContent>
@@ -237,6 +242,7 @@ function Tasks() {
                 </Dialog>
 
                 <Dialog
+                    key='todo_new_edit'
                     open={openTask}
                     onClose={toggleTask}
                     aria-labelledby="alert-dialog-title"
@@ -273,7 +279,7 @@ function Tasks() {
                             </div>
                             <div className="calendar_cnt">
                                 {projectTasks.tasks.filter(t => getShortDate(t.deadline) == getShortDate(new Date().setDate(new Date().getDate() + i))).map((t, i) => (
-                                    <Task task={t} key={'c' + i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} />)
+                                    <Task task={t} key={'c' + i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} view={view} />)
                                 )}
                             </div>
                         </div>)
@@ -286,7 +292,7 @@ function Tasks() {
 };
 
 
-function Task({ task, deleteTask, editTask, index, newTodo, editTodo }) {
+function Task({ task, deleteTask, editTask, index, newTodo, editTodo, view }) {
 
     return (
         <>
@@ -294,17 +300,20 @@ function Task({ task, deleteTask, editTask, index, newTodo, editTodo }) {
 
                 <Accordion key={'a' + index}>
                     <AccordionSummary
-                        expandIcon={'➕'}
+                        expandIcon={<ExpandMoreIcon />}
                         aria-controls="panel1a-content"
                         id="panel1a-header"
                     >
                         <div className="mb">
                             <div className="prj_date">
                                 <div>
-                                    <button onClick={() => deleteTask(task._id)}>❌</button>
-                                    <button onClick={() => editTask(task._id)}>🛠️</button>
+                                    <Vmenu edit={editTask} del={deleteTask} id={task._id} />
+                                    {/* <button onClick={() => deleteTask(task._id)}>❌</button>
+                                    <button onClick={() => editTask(task._id)}>🛠️</button> */}
+                                    <User user={task.user}></User>
                                 </div>
-                                <div>{getFullDate(task.deadline)}</div>
+                                <div>{!view ? getFullDate(task.deadline) : ''}</div>
+                                <div><Progress task={task} /></div>
                             </div>
                             <div><h3>{task.name}</h3></div>
                         </div>
