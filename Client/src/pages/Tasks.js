@@ -11,6 +11,7 @@ import Todos from "./../components/Todos";
 import User from "./../components/User";
 import Vmenu from "./../components/Vmenu";
 import Progress from "./../components/Progress";
+import Msgbox from "./../components/Msgbox";
 //------------------Text Editor ReactQuill--------------------
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -52,10 +53,10 @@ function Tasks() {
     const [editModeTodo, setEditModeTodo] = useState({ mode: false, taskId: null, todoId: null });
     //Task view mode
     const [view, setView] = useState(true);
+    //Show Message box
+    const [msg, setMsg] = useState({ title: '', descr: '' });
     //Get user details from auth0
-    const { user, getAccessTokenSilently } = useAuth0();
-
-    var tIndex = 0;
+    const { user } = useAuth0();
 
     useEffect(() => {
         if (token) initialize();
@@ -99,6 +100,7 @@ function Tasks() {
         else if (editMode.id) data = await apiSend('/projects/' + _id + '/task/' + editMode.id, 'PUT', token, { name, deadline, color, priority });
         //refresh data
         console.log("API Response:", data);
+        if (data.status === 'error') setMsg({ title: data.status, descr: data.message });
         const res = await apiSend('/projects/' + _id, 'GET', token);
         dispatch({ type: 'Tsk_update', data: res.data });
 
@@ -181,6 +183,10 @@ function Tasks() {
 
     return (
         <>
+            {msg.title !== ''
+                ? < Msgbox msg={msg} />
+                : ''
+            }
             <div className="page_nav">
                 <div>
                     <Link to="/projects">
@@ -226,10 +232,10 @@ function Tasks() {
                             <label>Color</label>
                             <input type='text' name='color' defaultValue={form.color} onChange={setValue}></input>
                             <label>Priority</label>
-                            <select name="priority" onChange={setValue}>
-                                <option value={0} selected={form.priority === 0}>Low</option>
-                                <option value={1} selected={form.priority === 1}>Medium</option>
-                                <option value={2} selected={form.priority === 2}>High</option>
+                            <select name="priority" onChange={setValue} defaultValue={form.priority}>
+                                <option value={0}>Low</option>
+                                <option value={1}>Medium</option>
+                                <option value={2}>High</option>
                             </select>
                         </div>
                     </DialogContent>

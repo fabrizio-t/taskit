@@ -159,7 +159,9 @@ exports.saveTasks = async (req, res) => {
     if (!req.body.color) err.push("Color");
     if (!req.body.tags) err.push("Tags");
     if (!req.body.priority) err.push("Priority");
-    if (err.length > 0) return res.status(400).send('{"error":"One or more parameters are missing: ' + err.join(', ') + '"}');
+    status = 'error';
+    message = 'One or more parameters are missing: ' + err.join(', ');
+    if (err.length > 0) return res.status(400).json({ status, message });
 
     console.log(req.body);
 
