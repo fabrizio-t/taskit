@@ -23,7 +23,7 @@ export const registerUserAndGetProjects = async (accessToken, { sub, nickname, p
 
 export const formInitial = () => ({
     name: '',
-    deadline: '',
+    deadline: new Date().toISOString().slice(0, 16),
     color: '',
     priority: ''
 });

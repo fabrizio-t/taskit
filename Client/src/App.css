@@ -300,3 +300,41 @@ body {
 .user {
   font-weight: bold;
 }
+
+.form {
+  /*   display: block; */
+  min-width: 300px;
+}
+
+.form input {
+  height: 35px;
+  width: 100%;
+}
+
+.form select {
+  height: 35px;
+  width: 100%;
+}
+
+.form>* {
+  margin-bottom: 5px;
+  margin-top: 5px;
+}
+
+.profile_details {
+  display: flex;
+}
+
+.profile_details img {
+  max-width: 100px;
+  max-height: 100px;
+  border-radius: 50%;
+}
+
+.profile_details ul {
+  list-style: none
+}
+
+.profile_details li {
+  font-size: 18px;
+}

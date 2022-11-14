@@ -131,11 +131,10 @@ function Tasks() {
         const index = projectTasks.tasks.findIndex(t => t._id === id);
         setForm({
             name: projectTasks.tasks[index].name,
-            deadline: projectTasks.tasks[index].deadline.substr(0, projectTasks.tasks[index].deadline.length - 8),
+            deadline: projectTasks.tasks[index].deadline.slice(0, - 8),
             color: projectTasks.tasks[index].color,
             priority: projectTasks.tasks[index].priority
         });
-        console.log("loading date:", projectTasks.tasks[index].deadline.substr(0, projectTasks.tasks[index].deadline.length - 8));
         toggleDialog();
     }
 
@@ -224,20 +223,22 @@ function Tasks() {
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
                         </DialogContentText>
-                        <div className="form">
-                            <label>Title</label>
-                            <input type="text" name="name" defaultValue={form.name} onChange={setValue}></input>
-                            <label>Deadline</label>
-                            <input type='datetime-local' name='deadline' defaultValue={form.deadline} onChange={setValue} />
-                            <label>Color</label>
-                            <input type='text' name='color' defaultValue={form.color} onChange={setValue}></input>
-                            <label>Priority</label>
-                            <select name="priority" onChange={setValue} defaultValue={form.priority}>
-                                <option value={0}>Low</option>
-                                <option value={1}>Medium</option>
-                                <option value={2}>High</option>
-                            </select>
-                        </div>
+                        <form>
+                            <div className="form">
+                                <label>Title</label>
+                                <input type="text" name="name" defaultValue={form.name} onChange={setValue}></input>
+                                <label>Deadline</label>
+                                <input type='datetime-local' name='deadline' defaultValue={form.deadline} onChange={setValue} />
+                                <label>Color</label>
+                                <input type='text' name='color' defaultValue={form.color} onChange={setValue}></input>
+                                <label>Priority</label>
+                                <select name="priority" onChange={setValue} defaultValue={form.priority}>
+                                    <option value={0}>Low</option>
+                                    <option value={1}>Medium</option>
+                                    <option value={2}>High</option>
+                                </select>
+                            </div>
+                        </form>
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={toggleDialog}>Cancel</Button>

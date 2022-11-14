@@ -18,10 +18,8 @@ const projectSchema = new Schema({
         type: Date,
         required: true
     },
-    collabs: {
-        type: [],
-        required: true
-    },
+    collabs: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    invites: [],
     sub: { // "sub" field from auth0 = user unique id
         type: String,
         required: true

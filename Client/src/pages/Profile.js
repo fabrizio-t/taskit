@@ -1,40 +1,66 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
+import Tableview from '../components/Tableview.js'
+import { apiSend, getFullDate } from '../utils/services.js'
+import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 function Projects() {
 
+    //Dialog Window
+    const [invites, setInvites] = useState([]);
+
+    //Access Token
+    let token = useSelector(state => state.token);
+
     const { user } = useAuth0();
 
+    const getInvites = async () => {
+        const res = await apiSend('/invites', 'GET', token);
+        console.log("API RESPONSE:", res);
+    }
+
+    useEffect(() => {
+        if (user) getInvites();
+    }, [user]);
     if (!user) {
         return null;
     }
 
+
     return (
         <>
-            <div className="content-layout">
-                <h1 id="page-title" className="content__title">
-                    Profile
-                </h1>
-                <div className="content__body">
-                    <div className="profile-grid">
-                        <div className="profile__header">
-                            <img
-                                src={user.picture}
-                                alt="Profile"
-                                className="profile__avatar"
-                            />
-                            <div className="profile__headline">
-                                <div className="profile__description"><b>Name:</b> {user.name}</div>
-                                <div className="profile__description"><b>Email:</b> {user.email}</div>
-                                <div className="profile__description"><b>User ID:</b> {user.sub}</div>
-                            </div>
-                        </div>
-                        <div className="profile__details">
-                            {/* {JSON.stringify(user, null, 2)} */}
-                        </div>
-                    </div>
+
+            <h2>
+                Profile
+            </h2>
+
+            <div className="profile_details">
+                <div>
+                    <img
+                        src={user.picture}
+                        alt="Profile"
+                        className="profile__avatar"
+                    />
+                </div>
+                <div >
+                    <ul>
+                        <li><b>Name:</b> {user.name}</li>
+                        <li><b>Nickname:</b> {user.nickname}</li>
+                        <li><b>Email:</b> {user.email}</li>
+                        {/* <li><b>Social login:</b> {user.sub.split("|")[0]}</li> */}
+                    </ul>
                 </div>
             </div>
+
+            <h3>
+                Invites received:
+            </h3>
+
+            <div className="">
+                <Tableview />
+            </div>
+
         </>
     );
 };

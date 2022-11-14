@@ -7,18 +7,21 @@ exports.getProjects = async (req, res) => {
     console.log("USER ID:", req.auth.payload.sub);
     const sub = req.auth.payload.sub;
 
+    let user = await users.findOne({ sub });
+
     let where = {
         deadline: {
             $gte: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),//new Date().toISOString(),
         },
-        $or: [{ sub }, { collabs: sub }]
+        //$or: [{ sub }, { 'collabs.sub': sub }]
+        $or: [{ sub }, { collabs: user._id }]
     };
 
-    let r;
     try {
-        r = await projects.find(where).populate('owner').sort({ deadline: 1 });
+        let r = await projects.find(where).populate('owner').populate('collabs').sort({ deadline: 1 });
         res.status(200).json(r);
     } catch (e) {
+        console.log("GET Project:", e);
         res.status(500).send(e);
 
     }
@@ -119,10 +122,11 @@ exports.getTasks = async (req, res) => {
 
     let r;
     try {
+        let user = await users.findOne({ sub });
         //Check if project exists and user is authorized
         data = await projects.findOne({
             _id: project_id,
-            $or: [{ sub }, { collabs: sub }]
+            $or: [{ sub }, { collabs: user._id }]
         }).populate('owner');
 
         if (data) {

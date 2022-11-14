@@ -7,9 +7,10 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 
 //------------------My components--------------------
-import Todos from "./../components/Todos";
+import Taglist from "./../components/Taglist";
 import User from "./../components/User";
 import Vmenu from "./../components/Vmenu";
+import Adduser from "./../components/Adduser";
 
 //------------------Text Editor ReactQuill--------------------
 import ReactQuill from 'react-quill';
@@ -33,9 +34,12 @@ function Projects() {
     //Value of ReactQuill Text Editor
     const [description, setEditorValue] = useState('');
     //Value of form
-    const [form, setForm] = useState({ title: '', deadline: new Date().toISOString().slice(0, 16) });
+    const [form, setForm] = useState({/*  title: '', deadline: new Date().toISOString().slice(0, 16), collabs: []  */ });
+    //Invited members to the project
+    const [invitedList, setInvitedList] = useState([]);
+    //Project team members
+    const [teamMembers, setTeamMembers] = useState([]);
     //Save access token
-    /* const [token, setToken] = useState(''); */
     const token = useSelector(state => state.token);
     //Get user details from auth0
     const { user, getAccessTokenSilently } = useAuth0();
@@ -67,6 +71,7 @@ function Projects() {
         setForm(f => {
             f.title = '';
             f.deadline = '';
+            f.collabs = [];
             return f;
         });
         setEditorValue('');
@@ -76,7 +81,7 @@ function Projects() {
 
     //Create New project
     const saveProject = async (event) => {
-        console.log("saving date:", event.target.deadline.value);
+        console.log("saving date:", event.target.deadline.value, teamMembers.map(e => e._id), invitedList);
         event.preventDefault();
         let data;
         if (!editor.mode) {
@@ -84,7 +89,9 @@ function Projects() {
                 {
                     title: event.target.title.value,
                     deadline: event.target.deadline.value,
-                    description
+                    description,
+                    collabs: teamMembers.map(e => e._id),
+                    invites: invitedList
                 });
         }
         else {
@@ -92,7 +99,9 @@ function Projects() {
                 {
                     title: event.target.title.value,
                     deadline: event.target.deadline.value,
-                    description
+                    description,
+                    collabs: teamMembers,
+                    invites: invitedList
                 });
         }
         console.log("API RESPONSE: ", data);
@@ -111,16 +120,46 @@ function Projects() {
 
     const editProject = (id) => {
         const pId = projects.findIndex(p => p._id === id);
-        console.log("loading date:", projects[pId].deadline.substr(0, projects[pId].deadline.length - 8));
+        console.log("COLLABS:", pId, projects[pId].collabs);
         setForm(f => {
             f.title = projects[pId].title;
-            f.deadline = projects[pId].deadline.substr(0, projects[pId].deadline.length - 8);
+            f.deadline = projects[pId].deadline.slice(0, - 8);
+            /* f.collabs = projects[pId].collabs;
+            f.invites = projects[pId].invites; */
             return f;
         });
+        setTeamMembers(projects[pId].collabs);
+        setInvitedList(projects[pId].invites);
         setEditorValue(projects[pId].description);
         editorMode({ mode: true, id });
         toggleDialog();
     }
+
+    const deleteInvite = (toDelete) => {
+        console.log("To DELETE:", toDelete)
+        setInvitedList((chips) => chips.filter((chip) => chip._id !== toDelete._id));
+        /*  setForm(f => {
+             f.invites = f.invites.filter((invite) => invite._id !== toDelete._id);
+             return f;
+         });
+         setInvitedList(form.invites); */
+    };
+    const addToInviteList = (email) => {
+        setInvitedList((chips) => [...chips, { _id: Date.now(), email }]);
+        /* setForm((f) => {
+            f.invites = [...f.invites, { _id: Date.now(), email }];
+            console.log("UPDATED invited:", f);
+            return f;
+        });
+        setInvitedList(form.invites); */
+    };
+    const deleteTeamMember = (toDelete) => {
+        setTeamMembers((chips) => chips.filter((chip) => chip._id !== toDelete._id));
+        /* setForm(f => {
+            f.collabs = f.collabs.filter((collab) => collab._id !== toDelete._id);
+            return f;
+        }); */
+    };
 
     if (!user) {
         return null;
@@ -144,7 +183,7 @@ function Projects() {
                 <DialogContent>
                     <DialogContentText id="alert-dialog-description">
                     </DialogContentText>
-                    <form id="new_project" onSubmit={saveProject}>{/* saveProject testData*/}
+                    <form id="new_project" onSubmit={saveProject}>
                         <div className="form">
                             <label>Title</label>
                             <input type="text" name="title" defaultValue={form.title} ></input>
@@ -152,6 +191,11 @@ function Projects() {
                             <ReactQuill theme="snow" value={description} onChange={setEditorValue} />
                             <label>Deadline</label>
                             <input type='datetime-local' name='deadline' defaultValue={form.deadline} />
+                            <label>Invite Team Members</label>
+                            <Adduser addToList={addToInviteList} />
+                            <Taglist list={invitedList} deleteFromList={deleteInvite} />
+                            <label>Team</label>
+                            <Taglist list={teamMembers} deleteFromList={deleteTeamMember} />
                         </div>
                     </form>
                 </DialogContent>
@@ -177,8 +221,6 @@ function Project({ project, deleteProject, editProject }) {
             <div className="project">
                 <div className="prj_date">
                     <div>
-                        {/* <button onClick={() => deleteProject(project._id)}>❌</button>
-                        <button onClick={() => editProject(project._id)}>🛠️</button> */}
                         <Vmenu edit={editProject} del={deleteProject} id={project._id} />
                         <User user={project.owner}></User>
                     </div>
