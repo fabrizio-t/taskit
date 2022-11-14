@@ -302,5 +302,95 @@ exports.saveUser = async (req, res) => {
         res.status(500).send(e);
     }
 }
+
+exports.getInvites = async (req, res) => {
+
+    const sub = req.auth.payload.sub;
+
+    const user = await users.findOne({ sub });
+
+    console.log("get invites:", sub, user);
+
+    let where = {
+        deadline: {
+            $gte: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
+        },
+        $or: [{ collabs: user._id }, { 'invites.email': user.email }]
+    };
+
+    try {
+        data = await projects.find(where).sort({ deadline: 1 });
+        //TO FIX: do not return full list of invites
+        status = 'success';
+        res.status(200).json({ status, data, user });
+    } catch (e) {
+        console.log("GET Project:", e);
+        res.status(500).send(e);
+
+    }
+}
+
+exports.acceptInvite = async (req, res) => {
+    const project_id = req.params.pid;
+    const sub = req.auth.payload.sub;
+
+    const user = await users.findOne({ sub });
+    console.log("Accept invite:", project_id, user);
+
+    try {
+        //data = await projects.findOneAndUpdate({ _id: project_id }, req.body, { new: true }).exec()
+        data = await projects.findOneAndUpdate({ _id: project_id },
+            {
+                $push: {
+                    collabs: user._id
+                }
+            },
+            { new: true });
+
+        if (data) {
+            data = await projects.findOneAndUpdate({ _id: project_id },
+                {
+                    $pull: {
+                        invites: { email: user.email }
+                    }
+                },
+                { new: true });
+        }
+        status = 'success';
+        res.status(200).json({ status, data });
+    } catch (e) {
+        console.log("Accept invite:", e);
+        res.status(500).send(e);
+
+    }
+
+}
+
+exports.rejectInvite = async (req, res) => {
+    const project_id = req.params.pid;
+    const sub = req.auth.payload.sub;
+
+    const user = await users.findOne({ sub });
+    console.log("Accept invite:", project_id, user);
+
+    try {
+
+        data = await projects.findOneAndUpdate({ _id: project_id },
+            {
+                $pull: {
+                    collabs: user._id
+                }
+            },
+            { new: true });
+
+        status = 'success';
+        res.status(200).json({ status, data });
+    } catch (e) {
+        console.log("Accept invite:", e);
+        res.status(500).send(e);
+
+    }
+}
+
 //{"title": "My fifth project","description": "Building a fullstack app with auth0 authentication service","deadline": "12/11/2022"}
 //{"name":"Create Express Server","deadline":"11/11/2022","todos":[],"color":"sdsd","tags":[],"priority":1}

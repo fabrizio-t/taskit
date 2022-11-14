@@ -16,7 +16,11 @@ router.route('/projects/:pid/task/:tid')//Delete and Update specific tasks belon
 router.route('/user')
     .post(validateAccessToken, controller.saveUser);
 router.route('/invites')
-    .get(validateAccessToken, controller.saveUser);
+    .get(validateAccessToken, controller.getInvites);
+router.route('/invites/:pid/accept')
+    .get(validateAccessToken, controller.acceptInvite);
+router.route('/invites/:pid/reject')
+    .get(validateAccessToken, controller.rejectInvite);
 router.route('/api/messages/protected')
     .get(validateAccessToken, controller.getMessage);
 

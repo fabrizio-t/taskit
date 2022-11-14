@@ -8,7 +8,7 @@ import { useSelector } from 'react-redux';
 function Projects() {
 
     //Dialog Window
-    const [invites, setInvites] = useState([]);
+    const [invites, setInvites] = useState({ data: [], user: {} });
 
     //Access Token
     let token = useSelector(state => state.token);
@@ -18,6 +18,17 @@ function Projects() {
     const getInvites = async () => {
         const res = await apiSend('/invites', 'GET', token);
         console.log("API RESPONSE:", res);
+        setInvites(res);
+    }
+
+    const toggleCollab = async (checked, project_id) => {
+        let action = checked === false ? 'reject' : 'accept';
+        console.log("executING:", project_id, action);
+        const res = await apiSend('/invites/' + project_id + '/' + action, 'GET', token);
+        console.log("TOGGLE API RESPONSE:", res);
+        const res2 = await apiSend('/invites/', 'GET', token);
+        console.log("TOGGLE API RESPONSE:", res2);
+        setInvites(res2);
     }
 
     useEffect(() => {
@@ -48,7 +59,7 @@ function Projects() {
                         <li><b>Name:</b> {user.name}</li>
                         <li><b>Nickname:</b> {user.nickname}</li>
                         <li><b>Email:</b> {user.email}</li>
-                        {/* <li><b>Social login:</b> {user.sub.split("|")[0]}</li> */}
+                        <li><b>Social login:</b> {user.sub.split("|")[0]}</li>
                     </ul>
                 </div>
             </div>
@@ -58,7 +69,7 @@ function Projects() {
             </h3>
 
             <div className="">
-                <Tableview />
+                <Tableview data={invites.data} uid={invites.user._id} toggleCollab={toggleCollab} />
             </div>
 
         </>
