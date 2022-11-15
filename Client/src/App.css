@@ -104,6 +104,20 @@ body {
   margin-bottom: 10px;
 }
 
+.project a {
+  text-decoration: none;
+  color: rgb(0, 66, 165);
+}
+
+.project a:visited {
+  text-decoration: none;
+  color: rgb(0, 66, 165);
+}
+
+h1 {
+  color: rgb(0, 66, 165);
+}
+
 .project h2 {
   margin: 5px;
 }
