@@ -1,9 +1,13 @@
-import { LoginButton } from "../auth0/login-button.js";
+import { Access } from "../auth0/Access.js";
+import Img from "../imgs/home.png";
 function Home() {
     return (
         <>
-            <h2>Home</h2>
-            <LoginButton />
+            <center>
+                <h1>Your Productivity Toolkit</h1>
+                <div><Access /></div>
+                <img src={Img}></img>
+            </center>
         </>
     );
 }

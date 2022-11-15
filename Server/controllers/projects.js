@@ -119,7 +119,7 @@ exports.getTasks = async (req, res) => {
 
     const project_id = req.params.pid;
     const sub = req.auth.payload.sub;
-    const { from, to, tags } = req.query;
+    const { from, to, tags, uid } = req.query;
     console.log("Getting tasks....");
 
     try {
@@ -138,6 +138,9 @@ exports.getTasks = async (req, res) => {
                     $gte: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),
                 }
             };
+            if (tags) where['tags'] = {
+                $elemMatch: { email: { $in: tags.split(",") } }
+            }
             const t = await tasks.find(where).populate('user').sort({ deadline: 1 });
             status = 'success';
             res.status(200).json({ status, data: { ...data._doc, tasks: t } });

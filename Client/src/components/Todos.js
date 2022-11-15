@@ -2,6 +2,8 @@ import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { apiSend } from '../utils/services.js'
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 
 function Todos({ todos, taskId, editTodo }) {
@@ -9,43 +11,12 @@ function Todos({ todos, taskId, editTodo }) {
     //Dialog Window
     const [open, setOpen] = useState(true);
 
-    /*     const editTodo = async (_id, id, todos) => {
-    
-            let data = await apiSend('/projects/' + _id + '/task/' + id, 'PUT', token, { todos });
-            //refresh data
-            const res = await apiSend('/projects/' + _id, 'GET', token);
-            dispatch({ type: 'Tsk_update', data: res.data });
-    
-            toggleDialog();
-        }; */
-
     const toggleDialog = () => {
         setOpen(!open);
     };
 
     return (
         <>
-            {/* <Dialog
-                open={open}
-                onClose={toggleDialog}
-                aria-labelledby="alert-dialog-title"
-                aria-describedby="alert-dialog-description"
-            >
-                <DialogTitle id="alert-dialog-title">
-                    {"Task:"}
-                </DialogTitle>
-                <DialogContent>
-                    <DialogContentText id="alert-dialog-description">
-                    </DialogContentText>
-                    Hello
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={toggleDialog}>Cancel</Button>
-                    <Button onClick={editTodo} autoFocus>
-                        Save
-                    </Button>
-                </DialogActions>
-            </Dialog> */}
             {todos.map((t, i) => <Todo todo={t} key={i} index={i} taskId={taskId} editTodo={editTodo} />)}
         </>
     );
@@ -111,7 +82,8 @@ function Todo({ todo, taskId, index, editTodo }) {
                         </div>
                     </div>
                 </div>
-                <div className={'delete'} onClick={() => { deleteTodo() }}></div>
+                <div onClick={() => { deleteTodo() }}><RemoveCircleOutlineIcon /></div>
+                {/* className={'delete'} */}
             </div>
         </>
     );
