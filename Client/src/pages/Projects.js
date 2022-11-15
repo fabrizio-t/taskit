@@ -11,6 +11,7 @@ import Taglist from "./../components/Taglist";
 import User from "./../components/User";
 import Vmenu from "./../components/Vmenu";
 import Adduser from "./../components/Adduser";
+import Msgbox from "./../components/Msgbox";
 
 //------------------Text Editor ReactQuill--------------------
 import ReactQuill from 'react-quill';
@@ -41,6 +42,8 @@ function Projects() {
     const [teamMembers, setTeamMembers] = useState([]);
     //Save access token
     const token = useSelector(state => state.token);
+    //Show Message box
+    const msg = useSelector(state => state.msg);
     //Get user details from auth0
     const { user, getAccessTokenSilently } = useAuth0();
 
@@ -105,6 +108,10 @@ function Projects() {
                 });
         }
         console.log("API RESPONSE: ", data);
+        if (data.status === 'error') {
+            dispatch({ type: 'Msg', data: { title: data.status, descr: data.message } });
+            return false;
+        }
         const res = await apiSend('/projects', 'GET', token);
         dispatch({ type: 'Prj_update', data: res });
         toggleDialog();
@@ -112,7 +119,11 @@ function Projects() {
 
     const deleteProject = async (id) => {
         const data = await apiSend(`/projects/${id}`, 'DELETE', token);
-        //console.log("DELETING PROJECT: ", data);
+        console.log("DELETING PROJECT: ", data);
+        if (data.status === 'error') {
+            dispatch({ type: 'Msg', data: { title: data.status, descr: data.message } });
+            return false;
+        }
         const res = await apiSend('/projects', 'GET', token);
         //console.log("REFRESHING PROJECT DATA: ", res);
         dispatch({ type: 'Prj_update', data: res });
@@ -156,6 +167,10 @@ function Projects() {
 
     return (
         <>
+            {msg.title !== ''
+                ? < Msgbox msg={msg} />
+                : ''
+            }
             <div className="button_cnt">
                 <div><Button variant="contained" onClick={newProject}>New Project</Button></div>
             </div>
@@ -197,7 +212,13 @@ function Projects() {
             </Dialog>
 
             <section>
-                {projects.map((p, i) => <Project project={p} key={i} deleteProject={deleteProject} editProject={editProject} />)}
+                <h2>Team Projects</h2>
+                {projects.filter(p => p.collabs.length > 0).map((p, i) => <Project project={p} key={p._id} deleteProject={deleteProject} editProject={editProject} />)}
+            </section>
+
+            <section>
+                <h2>My Projects</h2>
+                {projects.filter(p => p.collabs.length === 0).map((p, i) => <Project project={p} key={p._id} deleteProject={deleteProject} editProject={editProject} />)}
             </section>
         </>
     );
