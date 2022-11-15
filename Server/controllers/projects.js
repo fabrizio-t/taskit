@@ -141,6 +141,9 @@ exports.getTasks = async (req, res) => {
             if (tags) where['tags'] = {
                 $elemMatch: { email: { $in: tags.split(",") } }
             }
+            if (from) where['deadline'] = { $gte: from }
+            if (to) where['deadline'] = { $lte: to }
+
             const t = await tasks.find(where).populate('user').sort({ deadline: 1 });
             status = 'success';
             res.status(200).json({ status, data: { ...data._doc, tasks: t } });

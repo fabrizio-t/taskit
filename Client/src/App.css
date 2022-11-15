@@ -112,6 +112,7 @@ body {
   display: flex;
   justify-content: space-between;
   padding: 10px;
+  align-items: center;
 }
 
 .prj_date {
@@ -165,6 +166,7 @@ body {
   align-self: stretch;
   display: flex;
   align-items: center;
+  cursor: pointer;
 }
 
 .taskedit {

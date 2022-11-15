@@ -37,13 +37,14 @@ CircularProgressWithLabel.propTypes = {
     value: PropTypes.number.isRequired,
 };
 
-export default function Progress({ task }) {
+export default function Progress({ data }) {
     const [progress, setProgress] = React.useState(0);
 
     React.useEffect(() => {
-        const v = task.todos.reduce((acc, t) => t.status === 'green' ? acc + 1 : acc, 0);
-        v === 0 ? setProgress(0) : setProgress(v / task.todos.length * 100);
-    }, [task]);
+        /* const v = task.todos.reduce((acc, t) => t.status === 'green' ? acc + 1 : acc, 0);
+        v === 0 ? setProgress(0) : setProgress(v / task.todos.length * 100); */
+        setProgress(data);
+    }, [data]);
 
     return <CircularProgressWithLabel value={progress} />;
 }

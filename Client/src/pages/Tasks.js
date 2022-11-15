@@ -14,6 +14,7 @@ import Progress from "./../components/Progress";
 import Msgbox from "./../components/Msgbox";
 import Taglist from "./../components/Taglist";
 import Adduser from "./../components/Adduser";
+import Filter from "./../components/Filter";
 //------------------Text Editor ReactQuill--------------------
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -31,14 +32,11 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
-import Avatar from '@mui/material/Avatar';
+import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import Chip from '@mui/material/Chip';
 import Stack from '@mui/material/Stack';
-/* import ControlPointIcon from '@mui/icons-material/ControlPoint'; */
-/* import DeleteIcon from '@mui/icons-material/Delete';
-import SendIcon from '@mui/icons-material/Send';
-import Stack from '@mui/material/Stack'; */
-/* import ExpandMoreIcon from '@mui/icons-material/ExpandMore'; */
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+
 
 function Tasks() {
     //Project ID we are operating in
@@ -49,6 +47,7 @@ function Tasks() {
     const dispatch = useDispatch();
     //Dialog Window
     const [open, setOpen] = useState(false);
+    //Task Dialog Window
     const [openTask, setOpenTask] = useState(false);
     //Value of form
     const [form, setForm] = useState({ name: '', deadline: new Date().toISOString().slice(0, 16), color: '#fff', priority: 0 });
@@ -62,14 +61,30 @@ function Tasks() {
     const [view, setView] = useState(true);
     //Invited members to the project
     const [tagList, setTagList] = useState([]);
+    //OverAll rogress tracker
+    const [progress, setProgress] = useState('');
     //Show Message box
     const msg = useSelector(state => state.msg);
     //Get user details from auth0
     const { user } = useAuth0();
 
+    const computeProgress = () => {
+        //projectTasks.tasks.
+        const completedTodos = projectTasks.tasks.map(task => task.tags.some(f => f.email === 'milestone') ? task.todos.filter(t => t.status === 'green').length : 0)
+            .reduce((partialSum, a) => partialSum + a, 0);
+        const totalTodos = projectTasks.tasks.map(task => task.tags.some(f => f.email === 'milestone') ? task.todos.length : 0)
+            .reduce((partialSum, a) => partialSum + a, 0);
+        setProgress(completedTodos / totalTodos * 100);
+    }
+
     useEffect(() => {
         if (token) initialize();
+
     }, [token]);
+
+    useEffect(() => {
+        computeProgress();
+    }, [projectTasks]);
 
     const initialize = async () => {
         try {
@@ -219,18 +234,20 @@ function Tasks() {
                 ? < Msgbox msg={msg} />
                 : ''
             }
-            <div className="page_nav">
+            <div className="button_cnt">
                 <div>
                     <Link to="/projects">
-                        <Button variant="outlined" startIcon={'⬅️'}>
-                            Back
+                        <Button size="small">
+                            <ArrowBackIcon /> Back
                         </Button>
                     </Link>
                 </div>
-                <div><h2>Project: {projectTasks.title}</h2></div>
+                <div><h1>{projectTasks.title}</h1></div>
+                <div><Progress key="overall_progress" data={progress} /></div>
             </div>
             <div className="button_cnt">
                 <div><Button variant="contained" onClick={newTask}><AddIcon />New Task</Button></div>
+                <div><Button variant="outlined" onClick={() => dispatch({ type: 'Open_filter', data: true })}><FilterAltIcon />Filters</Button></div>
                 <div>
                     <ButtonGroup
                         disableElevation
@@ -330,12 +347,18 @@ function Tasks() {
                 </section>
                 : ''
             }
+            <Filter key="filter_dialog" id={_id} token={token} />
         </>
     );
 };
 
 
 function Task({ task, deleteTask, editTask, index, newTodo, editTodo, view }) {
+
+    const progressCalc = () => {
+        const v = task.todos.reduce((acc, t) => t.status === 'green' ? acc + 1 : acc, 0);
+        return v === 0 ? 0 : (v / task.todos.length * 100);
+    }
 
     return (
         <>
@@ -354,7 +377,7 @@ function Task({ task, deleteTask, editTask, index, newTodo, editTodo, view }) {
                                     <User user={task.user}></User>
                                 </div>
                                 <div>{!view ? getFullDate(task.deadline) : ''}</div>
-                                <div><Progress task={task} /></div>
+                                <div><Progress data={progressCalc} /></div>
                             </div>
                             <div><h3>{task.name}</h3></div>
                             <div>
