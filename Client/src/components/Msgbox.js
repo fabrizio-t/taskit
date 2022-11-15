@@ -9,6 +9,7 @@ import DialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
+import { useDispatch } from 'react-redux';
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
     '& .MuiDialogContent-root': {
@@ -51,12 +52,13 @@ BootstrapDialogTitle.propTypes = {
 export default function Msgbox({ msg }) {
     const [open, setOpen] = React.useState(true);
     const [message, setMessage] = React.useState(msg);
-
-    const handleClickOpen = () => {
+    const dispatch = useDispatch();
+    /* const handleClickOpen = () => {
         setOpen(true);
-    };
+    }; */
     const handleClose = () => {
         setOpen(false);
+        dispatch({ type: 'Msg', data: { title: '', descr: '' } });
     };
 
     React.useEffect(() => {
@@ -69,9 +71,6 @@ export default function Msgbox({ msg }) {
 
     return (
         <div>
-            <Button variant="outlined" onClick={handleClickOpen}>
-                Open dialog
-            </Button>
             <BootstrapDialog
                 onClose={handleClose}
                 aria-labelledby="customized-dialog-title"

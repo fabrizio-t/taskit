@@ -1,5 +1,10 @@
 import { combineReducers } from 'redux';
 
+const msg = (state = { title: '', descr: '' }, action) => {
+  if (action.type === 'Msg') return action.data;
+  return state;
+};
+
 const token = (state = '', action) => {
   if (action.type === 'Token') return action.data;
   return state;
@@ -22,6 +27,7 @@ const reducers = combineReducers({
   token,
   projects,
   tasks,
+  msg
 });
 
 export default reducers;

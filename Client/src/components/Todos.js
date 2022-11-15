@@ -57,6 +57,7 @@ function Todo({ todo, taskId, index, editTodo }) {
 
     const projectTasks = useSelector(state => state.tasks);
     let token = useSelector(state => state.token);
+
     const dispatch = useDispatch();
 
     const taskIndex = projectTasks.tasks.findIndex(t => t._id === taskId);
@@ -77,6 +78,10 @@ function Todo({ todo, taskId, index, editTodo }) {
 
         let data = await apiSend('/projects/' + projectTasks._id + '/task/' + taskId, 'PUT', token, { todos: updatedTodos });
         console.log("DATA:", data);
+        if (data.status === 'error') {
+            dispatch({ type: 'Msg', data: { title: data.status, descr: data.message } });
+            return false;
+        }
         //refresh data
         const res = await apiSend('/projects/' + projectTasks._id, 'GET', token);
         dispatch({ type: 'Tsk_update', data: res.data });

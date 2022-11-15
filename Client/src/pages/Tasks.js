@@ -54,7 +54,9 @@ function Tasks() {
     //Task view mode
     const [view, setView] = useState(true);
     //Show Message box
-    const [msg, setMsg] = useState({ title: '', descr: '' });
+    //const [msg, setMsg] = useState({ title: '', descr: '' });
+    //Show Message box
+    const msg = useSelector(state => state.msg);
     //Get user details from auth0
     const { user } = useAuth0();
 
@@ -100,7 +102,11 @@ function Tasks() {
         else if (editMode.id) data = await apiSend('/projects/' + _id + '/task/' + editMode.id, 'PUT', token, { name, deadline, color, priority });
         //refresh data
         console.log("API Response:", data);
-        if (data.status === 'error') setMsg({ title: data.status, descr: data.message });
+        if (data.status === 'error') {
+            //setMsg({ title: data.status, descr: data.message });
+            dispatch({ type: 'Msg', data: { title: data.status, descr: data.message } });
+            return false;
+        }
         const res = await apiSend('/projects/' + _id, 'GET', token);
         dispatch({ type: 'Tsk_update', data: res.data });
 
@@ -121,6 +127,11 @@ function Tasks() {
     const deleteTask = async (id) => {
         const data = await apiSend(`/projects/${_id}/task/${id}`, 'DELETE', token);
         console.log("DELETING TASK: ", data);
+        if (data.status === 'error') {
+            //setMsg({ title: data.status, descr: data.message });
+            dispatch({ type: 'Msg', data: { title: data.status, descr: data.message } });
+            return false;
+        }
         const res = await apiSend(`/projects/${_id}`, 'GET', token);
         console.log("REFRESHING PROJECT TASKS: ", res);
         dispatch({ type: 'Tsk_update', data: res.data });
@@ -169,6 +180,11 @@ function Tasks() {
         }
         let data = await apiSend('/projects/' + _id + '/task/' + taskid, 'PUT', token, { todos: updatedTodos });
         console.log("DATA:", data);
+        if (data.status === 'error') {
+            //setMsg({ title: data.status, descr: data.message });
+            dispatch({ type: 'Msg', data: { title: data.status, descr: data.message } });
+            return false;
+        }
         //refresh data
         const res = await apiSend('/projects/' + _id, 'GET', token);
         dispatch({ type: 'Tsk_update', data: res.data });

@@ -221,7 +221,7 @@ exports.updateTasks = async (req, res) => {
                 res.status(200).json({ status, data });
             } else {
                 status = 'error';
-                message = 'Task was not updated...is Task id correct? Is it your task?';
+                message = 'Task was not updated...are you the owner of this task?';
                 res.status(200).json({ status, message });
             }
         }
@@ -250,13 +250,13 @@ exports.deleteTasks = async (req, res) => {
     //We are authorized, let's delete the task
     try {
         if (proj) {
-            data = await tasks.deleteOne({ _id: task_id, project_id, sub });
+            data = await tasks.deleteOne({ _id: task_id, project_id, sub });//To FIx: project owners can access any tasks
             if (data && data.deletedCount > 0) {
                 status = 'success';
                 res.status(200).json({ status, data });
             } else {
-                status = 'success';
-                message = 'Task was not deleted...is Task id correct? Is it your task?'
+                status = 'error';
+                message = 'Task was not deleted...are you the owner of this task?'
                 res.status(200).json({ status, message });
             }
         }
