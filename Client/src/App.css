@@ -295,6 +295,7 @@ body {
   max-width: 30px;
   max-height: 30px;
   border-radius: 50%;
+  margin: 0px;
 }
 
 .user {
@@ -337,4 +338,9 @@ body {
 
 .profile_details li {
   font-size: 15px;
+}
+
+.tags_container {
+  width: 100px;
+  overflow-y: scroll;
 }

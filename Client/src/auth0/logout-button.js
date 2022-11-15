@@ -1,5 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
+import LogoutIcon from '@mui/icons-material/Logout';
+import Button from '@mui/material/Button';
 
 export const LogoutButton = () => {
   const { logout } = useAuth0();
@@ -11,8 +13,8 @@ export const LogoutButton = () => {
   };
 
   return (
-    <button className="button__logout" onClick={handleLogout}>
-      Log Out
-    </button>
+    <Button color="error" size="small" variant="contained" onClick={handleLogout}>
+      <LogoutIcon />Log Out
+    </Button>
   );
 };

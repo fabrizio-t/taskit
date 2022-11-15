@@ -12,6 +12,8 @@ import User from "./../components/User";
 import Vmenu from "./../components/Vmenu";
 import Progress from "./../components/Progress";
 import Msgbox from "./../components/Msgbox";
+import Taglist from "./../components/Taglist";
+import Adduser from "./../components/Adduser";
 //------------------Text Editor ReactQuill--------------------
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -28,6 +30,11 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import AddIcon from '@mui/icons-material/Add';
+import Avatar from '@mui/material/Avatar';
+import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
+/* import ControlPointIcon from '@mui/icons-material/ControlPoint'; */
 /* import DeleteIcon from '@mui/icons-material/Delete';
 import SendIcon from '@mui/icons-material/Send';
 import Stack from '@mui/material/Stack'; */
@@ -53,8 +60,8 @@ function Tasks() {
     const [editModeTodo, setEditModeTodo] = useState({ mode: false, taskId: null, todoId: null });
     //Task view mode
     const [view, setView] = useState(true);
-    //Show Message box
-    //const [msg, setMsg] = useState({ title: '', descr: '' });
+    //Invited members to the project
+    const [tagList, setTagList] = useState([]);
     //Show Message box
     const msg = useSelector(state => state.msg);
     //Get user details from auth0
@@ -88,6 +95,7 @@ function Tasks() {
     const newTask = () => {
         setEditMode({ mode: false, id: null });
         setForm(formInitial());
+        setTagList([])
         toggleDialog();
     };
 
@@ -98,8 +106,8 @@ function Tasks() {
         console.log("saving date:", deadline.substr(0, deadline - 8));
 
         let data = null;
-        if (!editMode.mode) data = await apiSend('/projects/' + _id, 'POST', token, { name, deadline, color, priority, todos: [], tags: [] });
-        else if (editMode.id) data = await apiSend('/projects/' + _id + '/task/' + editMode.id, 'PUT', token, { name, deadline, color, priority });
+        if (!editMode.mode) data = await apiSend('/projects/' + _id, 'POST', token, { name, deadline, color, priority, todos: [], tags: tagList });
+        else if (editMode.id) data = await apiSend('/projects/' + _id + '/task/' + editMode.id, 'PUT', token, { name, deadline, color, priority, tags: tagList });
         //refresh data
         console.log("API Response:", data);
         if (data.status === 'error') {
@@ -146,6 +154,7 @@ function Tasks() {
             color: projectTasks.tasks[index].color,
             priority: projectTasks.tasks[index].priority
         });
+        setTagList(projectTasks.tasks[index].tags);
         toggleDialog();
     }
 
@@ -192,6 +201,14 @@ function Tasks() {
         toggleTask();
     };
 
+    const deleteTag = (toDelete) => {
+        console.log("To DELETE:", toDelete)
+        setTagList((chips) => chips.filter((chip) => chip._id !== toDelete._id));
+    };
+    const addToTagList = (email) => {//Email is actually the Tag in this case -> To FIX
+        setTagList((chips) => [...chips, { _id: Date.now(), email }]);
+    };
+
     if (!user) {
         return null;
     }
@@ -213,7 +230,7 @@ function Tasks() {
                 <div><h2>Project: {projectTasks.title}</h2></div>
             </div>
             <div className="button_cnt">
-                <div><Button variant="contained" onClick={newTask}>New Task</Button></div>
+                <div><Button variant="contained" onClick={newTask}><AddIcon />New Task</Button></div>
                 <div>
                     <ButtonGroup
                         disableElevation
@@ -253,6 +270,9 @@ function Tasks() {
                                     <option value={1}>Medium</option>
                                     <option value={2}>High</option>
                                 </select>
+                                <label>Add Tags</label>
+                                <Adduser key="uddUsr" addToList={addToTagList} type="tag" />
+                                <Taglist key="tagLst" list={tagList} deleteFromList={deleteTag} />
                             </div>
                         </form>
                     </DialogContent>
@@ -331,19 +351,29 @@ function Task({ task, deleteTask, editTask, index, newTodo, editTodo, view }) {
                             <div className="prj_date">
                                 <div>
                                     <Vmenu edit={editTask} del={deleteTask} id={task._id} />
-                                    {/* <button onClick={() => deleteTask(task._id)}>❌</button>
-                                    <button onClick={() => editTask(task._id)}>🛠️</button> */}
                                     <User user={task.user}></User>
                                 </div>
                                 <div>{!view ? getFullDate(task.deadline) : ''}</div>
                                 <div><Progress task={task} /></div>
                             </div>
                             <div><h3>{task.name}</h3></div>
+                            <div>
+                                <Stack direction="row" spacing={0.5} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
+                                    {task.tags.map(tag => (
+                                        <Chip
+                                            color={tag.email === 'milestone' ? "primary" : "default"}
+                                            variant="default"
+                                            size="small"
+                                            label={tag.email}
+                                        />
+                                    ))}
+                                </Stack>
+                            </div>
                         </div>
                     </AccordionSummary>
                     <AccordionDetails>
                         <div>
-                            <Button variant="outlined" onClick={() => newTodo(task._id)}>New Todo</Button>
+                            <Button size="small" variant="outlined" onClick={() => newTodo(task._id)}> <AddIcon />New Todo</Button>
                             <Todos key={'t' + index} todos={task.todos} taskId={task._id} editTodo={editTodo} />
                         </div>
                     </AccordionDetails>

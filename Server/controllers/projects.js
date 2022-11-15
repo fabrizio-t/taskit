@@ -119,8 +119,9 @@ exports.getTasks = async (req, res) => {
 
     const project_id = req.params.pid;
     const sub = req.auth.payload.sub;
+    const { from, to, tags } = req.query;
+    console.log("Getting tasks....");
 
-    let r;
     try {
         let user = await users.findOne({ sub });
         //Check if project exists and user is authorized

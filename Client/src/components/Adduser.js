@@ -8,7 +8,7 @@ import TextField from '@mui/material/TextField';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Button from '@mui/material/Button';
 
-export default function Adduser({ addToList }) {
+export default function Adduser({ addToList, type }) {
     const [email, setEmail] = React.useState('');
 
     const handleChange = (prop) => (event) => {
@@ -29,13 +29,14 @@ export default function Adduser({ addToList }) {
 
         <>
             <Input
-                placeholder='user@email.com'
+                placeholder={type === 'user' ? 'user@email.com' : 'customTag'}
                 onChange={handleChange('email')}
                 id="input-with-icon-adornment"
                 value={email}
                 startAdornment={
                     <InputAdornment position="start">
-                        <AccountCircle />
+                        {/* <AccountCircle /> */}
+                        {type === 'user' ? <AccountCircle /> : '#'}
                     </InputAdornment>
                 }
             />

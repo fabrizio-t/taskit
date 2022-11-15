@@ -138,20 +138,9 @@ function Projects() {
     const deleteInvite = (toDelete) => {
         console.log("To DELETE:", toDelete)
         setInvitedList((chips) => chips.filter((chip) => chip._id !== toDelete._id));
-        /*  setForm(f => {
-             f.invites = f.invites.filter((invite) => invite._id !== toDelete._id);
-             return f;
-         });
-         setInvitedList(form.invites); */
     };
     const addToInviteList = (email) => {
         setInvitedList((chips) => [...chips, { _id: Date.now(), email }]);
-        /* setForm((f) => {
-            f.invites = [...f.invites, { _id: Date.now(), email }];
-            console.log("UPDATED invited:", f);
-            return f;
-        });
-        setInvitedList(form.invites); */
     };
     const deleteTeamMember = (toDelete) => {
         setTeamMembers((chips) => chips.filter((chip) => chip._id !== toDelete._id));
@@ -192,7 +181,7 @@ function Projects() {
                             <label>Deadline</label>
                             <input type='datetime-local' name='deadline' defaultValue={form.deadline} />
                             <label>Invite Team Members</label>
-                            <Adduser addToList={addToInviteList} />
+                            <Adduser addToList={addToInviteList} type="user" />
                             <Taglist list={invitedList} deleteFromList={deleteInvite} />
                             <label>Team</label>
                             <Taglist list={teamMembers} deleteFromList={deleteTeamMember} />

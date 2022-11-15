@@ -2,9 +2,10 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { LoginButton } from "../auth0/login-button";
 import { LogoutButton } from "../auth0/logout-button";
 import { Link } from "react-router-dom";
+import Button from '@mui/material/Button';
 
 function Navigation() {
-    const { isAuthenticated } = useAuth0();
+    const { user, isAuthenticated } = useAuth0();
     return (
         <>
             <nav className='nav-bar'>
@@ -14,7 +15,7 @@ function Navigation() {
                         <Link to="/">Home</Link>
                         <Link to="/projects">Projects</Link>
                         {isAuthenticated
-                            ? <><Link to="/profile">Profile</Link> <LogoutButton /></>
+                            ? <><Link to="/profile"><Button><img className="user_img" src={user.picture}></img></Button></Link> <LogoutButton /></>
                             : <LoginButton />
                         }
                     </div>
