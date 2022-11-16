@@ -8,12 +8,12 @@ exports.getProjects = async (req, res) => {
     const sub = req.auth.payload.sub;
 
     let user = await users.findOne({ sub });
+    console.log("USER QUERY:", user);
 
     let where = {
         deadline: {
             $gte: new Date(new Date().setHours(0, 0, 0, 0)).toISOString(),//new Date().toISOString(),
         },
-        //$or: [{ sub }, { 'collabs.sub': sub }]
         $or: [{ sub }, { collabs: user._id }]
     };
 
