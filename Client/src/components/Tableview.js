@@ -8,7 +8,6 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { getFullDate } from '../utils/services';
 import Switch from '@mui/material/Switch';
-import { useEffect, useState } from 'react';
 
 
 export default function Tableview({ data, uid, toggleCollab }) {
@@ -20,9 +19,9 @@ export default function Tableview({ data, uid, toggleCollab }) {
         //console.log(uid, row.collabs);
         toggleCollab(event.target.checked, id);
     };
-    const check = (row) => {
+    /* const check = (row) => {
         console.log(row.collabs, uid, row.collabs.includes(uid));
-    }
+    } */
     return (
         <TableContainer component={Paper}>
             {/* sx={{ minWidth: 650 }} */}

@@ -68,35 +68,31 @@ function Tasks() {
     //Get user details from auth0
     const { user } = useAuth0();
 
-    const computeProgress = () => {
-        //projectTasks.tasks.
-        const completedTodos = projectTasks.tasks.map(task => task.tags.some(f => f.email === 'milestone') ? task.todos.filter(t => t.status === 'green').length : 0)
-            .reduce((partialSum, a) => partialSum + a, 0);
-        const totalTodos = projectTasks.tasks.map(task => task.tags.some(f => f.email === 'milestone') ? task.todos.length : 0)
-            .reduce((partialSum, a) => partialSum + a, 0);
-        setProgress(completedTodos / totalTodos * 100);
-    }
-
     useEffect(() => {
+        const initialize = async () => {
+            try {
+                console.log("TOKEN:", token)
+                const res = await apiSend('/projects/' + _id, 'GET', token);
+                console.log("API RESPONSE:", res);
+                dispatch({ type: 'Tsk_update', data: res.data });
+            }
+            catch (e) {
+                console.log("ERROR:", e);
+            }
+        }
         if (token) initialize();
-
-    }, [token]);
+    }, [token, dispatch, _id]);
 
     useEffect(() => {
+        const computeProgress = () => {
+            const completedTodos = projectTasks.tasks.map(task => task.tags.some(f => f.email === 'milestone') ? task.todos.filter(t => t.status === 'green').length : 0)
+                .reduce((partialSum, a) => partialSum + a, 0);
+            const totalTodos = projectTasks.tasks.map(task => task.tags.some(f => f.email === 'milestone') ? task.todos.length : 0)
+                .reduce((partialSum, a) => partialSum + a, 0);
+            setProgress(completedTodos / totalTodos * 100);
+        }
         computeProgress();
     }, [projectTasks]);
-
-    const initialize = async () => {
-        try {
-            console.log("TOKEN:", token)
-            const res = await apiSend('/projects/' + _id, 'GET', token);
-            console.log("API RESPONSE:", res);
-            dispatch({ type: 'Tsk_update', data: res.data });
-        }
-        catch (e) {
-            console.log("ERROR:", e);
-        }
-    }
 
     //Open / Close Dialog Window
     const toggleDialog = () => {
@@ -338,7 +334,7 @@ function Tasks() {
                                 {getShortDate(new Date().setDate(new Date().getDate() + i))}
                             </div>
                             <div className="calendar_cnt">
-                                {projectTasks.tasks.filter(t => getShortDate(t.deadline) == getShortDate(new Date().setDate(new Date().getDate() + i))).map((t, i) => (
+                                {projectTasks.tasks.filter(t => getShortDate(t.deadline) === getShortDate(new Date().setDate(new Date().getDate() + i))).map((t, i) => (
                                     <Task task={t} key={'c' + i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} view={view} />)
                                 )}
                             </div>

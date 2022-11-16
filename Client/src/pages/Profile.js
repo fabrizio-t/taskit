@@ -1,7 +1,7 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
 import Tableview from '../components/Tableview.js'
-import { apiSend, getFullDate } from '../utils/services.js'
+import { apiSend } from '../utils/services.js'
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 
@@ -15,12 +15,6 @@ function Projects() {
 
     const { user } = useAuth0();
 
-    const getInvites = async () => {
-        const res = await apiSend('/invites', 'GET', token);
-        console.log("API RESPONSE:", res);
-        setInvites(res);
-    }
-
     const toggleCollab = async (checked, project_id) => {
         let action = checked === false ? 'reject' : 'accept';
         console.log("executING:", project_id, action);
@@ -32,8 +26,14 @@ function Projects() {
     }
 
     useEffect(() => {
+        const getInvites = async () => {
+            const res = await apiSend('/invites', 'GET', token);
+            console.log("API RESPONSE:", res);
+            setInvites(res);
+        }
         if (user) getInvites();
-    }, [user]);
+    }, [user, token]);
+
     if (!user) {
         return null;
     }

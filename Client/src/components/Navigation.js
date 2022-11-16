@@ -15,7 +15,7 @@ function Navigation() {
                         <Link to="/">Home</Link>
                         <Link to="/projects">Projects</Link>
                         {isAuthenticated
-                            ? <><Link to="/profile"><Button><img className="user_img" src={user.picture}></img></Button></Link> <LogoutButton /></>
+                            ? <><Link to="/profile"><Button><img alt="user_pic" className="user_img" src={user.picture}></img></Button></Link> <LogoutButton /></>
                             : <LoginButton />
                         }
                     </div>

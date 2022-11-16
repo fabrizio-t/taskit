@@ -6,7 +6,7 @@ function Home() {
             <center>
                 <h1>Your Productivity Toolkit</h1>
                 <div><Access /></div>
-                <img src={Img}></img>
+                <img alt="taskit homepage" src={Img}></img>
             </center>
         </>
     );

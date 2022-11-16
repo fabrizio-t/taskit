@@ -45,7 +45,6 @@ export function getFullDate(d) {
 
     const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
     let date = new Date(d);
-    let time = date.toLocaleString('en-UK', { hour: 'numeric', minute: 'numeric', hour12: true });
     let month = months[date.getMonth()]
     let day = getShortDate(d).split(" ")[0];
     let year = date.getFullYear();

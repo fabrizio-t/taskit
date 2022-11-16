@@ -1,19 +1,17 @@
 import { useSelector } from 'react-redux';
 import { useDispatch } from 'react-redux';
-import { useEffect, useState } from 'react';
 import { apiSend } from '../utils/services.js'
-import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import RemoveCircleOutlineIcon from '@mui/icons-material/RemoveCircleOutline';
 
 
 function Todos({ todos, taskId, editTodo }) {
 
     //Dialog Window
-    const [open, setOpen] = useState(true);
+    /* const [open, setOpen] = useState(true); */
 
-    const toggleDialog = () => {
+    /* const toggleDialog = () => {
         setOpen(!open);
-    };
+    }; */
 
     return (
         <>

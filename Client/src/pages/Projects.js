@@ -48,21 +48,20 @@ function Projects() {
     const { user, getAccessTokenSilently } = useAuth0();
 
     useEffect(() => {
+        const initialize = async () => {
+            try {
+                const accessToken = await getAccessTokenSilently();
+                //console.log("TOKEN ----->", accessToken);
+                dispatch({ type: 'Token', data: accessToken });
+                const data = await registerUserAndGetProjects(accessToken, user);
+                dispatch({ type: 'Prj_update', data });
+            }
+            catch (e) {
+                console.log("ERROR:", e);
+            }
+        }
         if (user) initialize();
-    }, [user]);
-
-    const initialize = async () => {
-        try {
-            const accessToken = await getAccessTokenSilently();
-            //console.log("TOKEN ----->", accessToken);
-            dispatch({ type: 'Token', data: accessToken });
-            const data = await registerUserAndGetProjects(accessToken, user);
-            dispatch({ type: 'Prj_update', data });
-        }
-        catch (e) {
-            console.log("ERROR:", e);
-        }
-    }
+    }, [user, dispatch, getAccessTokenSilently]);
 
     //Open / Close Dialog Window
     const toggleDialog = () => {

@@ -2,7 +2,7 @@
 function User({ user }) {
     return (
         <>
-            <img className="user_img" src={user.picture}></img>
+            <img alt="user profile" className="user_img" src={user.picture}></img>
             <span className="user">{user.nickname}</span>
         </>
     );
