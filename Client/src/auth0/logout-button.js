@@ -14,7 +14,7 @@ export const LogoutButton = () => {
 
   return (
     <Button color="error" size="small" variant="contained" onClick={handleLogout}>
-      <LogoutIcon />Log Out
+      <LogoutIcon />
     </Button>
   );
 };

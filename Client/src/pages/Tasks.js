@@ -34,8 +34,12 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AddIcon from '@mui/icons-material/Add';
 import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import Chip from '@mui/material/Chip';
+import Grid from '@mui/material/Unstable_Grid2';
+import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
 
 
 function Tasks() {
@@ -238,20 +242,23 @@ function Tasks() {
                         </Button>
                     </Link>
                 </div>
-                <div><h1>{projectTasks.title}</h1></div>
+
                 <div><Progress key="overall_progress" data={progress} /></div>
             </div>
+            <div className="prj_title"><h1>{projectTasks.title}</h1></div>
             <div className="button_cnt">
                 <div><Button variant="contained" onClick={newTask}><AddIcon />New Task</Button></div>
-                <div><Button variant="outlined" onClick={() => dispatch({ type: 'Open_filter', data: true })}><FilterAltIcon />Filters</Button></div>
                 <div>
+                    <ButtonGroup>
+                        <Button variant="contained" color="success" onClick={() => dispatch({ type: 'Open_filter', data: true })}><FilterAltIcon /></Button>
+                    </ButtonGroup>
                     <ButtonGroup
                         disableElevation
                         variant="contained"
                         aria-label="Disabled elevation buttons"
                     >
-                        <Button onClick={() => setView(true)}>Calendar</Button>
-                        <Button onClick={() => setView(false)}>List</Button>
+                        <Button onClick={() => setView(true)}><CalendarMonthIcon /></Button>
+                        <Button onClick={() => setView(false)}><FormatListBulletedIcon /></Button>
                     </ButtonGroup>
                 </div>
             </div>
@@ -327,22 +334,35 @@ function Tasks() {
                 : ''
             }
             {view ?
-                <section className="calendar">
-                    {Array.from(Array(30).keys()).map(i => (
-                        <div className="calendar_day">
-                            <div className="calendar_date">
-                                {getShortDate(new Date().setDate(new Date().getDate() + i))}
-                            </div>
-                            <div className="calendar_cnt">
-                                {projectTasks.tasks.filter(t => getShortDate(t.deadline) === getShortDate(new Date().setDate(new Date().getDate() + i))).map((t, i) => (
-                                    <Task task={t} key={'c' + i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} view={view} />)
-                                )}
-                            </div>
-                        </div>)
-                    )}
-                </section>
+                <>
+                    <Box sx={{ flexGrow: 1 }}>
+                        <Grid container spacing={1}>
+                            {Array.from(Array(30).keys()).map(i => (
+                                <Grid xs={12} sm={6} md={4} lg={3}>
+                                    <div className="calendar_date">
+                                        {getShortDate(new Date().setDate(new Date().getDate() + i))}
+                                    </div>
+                                    <div className="calendar_cnt">
+                                        {projectTasks.tasks.filter(t => getShortDate(t.deadline) === getShortDate(new Date().setDate(new Date().getDate() + i))).map((t, i) => (
+                                            <Task task={t} key={'c' + i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} view={view} />
+                                        )
+                                        )}
+                                    </div>
+                                </Grid>
+                            )
+                            )}
+                        </Grid>
+                    </Box>
+                </>
                 : ''
             }
+            <Box sx={{ flexGrow: 1 }}>
+                <Grid container spacing={1}>
+                    <Grid xs={12} sm={6} md={4} lg={3}>
+                        <div className="cal_day">xs=6 md=8</div>
+                    </Grid>
+                </Grid>
+            </Box>
             <Filter key="filter_dialog" id={_id} token={token} />
         </>
     );

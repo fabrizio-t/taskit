@@ -17,7 +17,7 @@ export const LoginButton = () => {
 
   return (
     <Button color="primary" size="small" variant="contained" onClick={handleLogin}>
-      <LoginIcon />Log In
+      <LoginIcon />
     </Button>
   );
 };

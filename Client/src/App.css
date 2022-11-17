@@ -58,9 +58,13 @@ body {
   font-weight: bold;
 }
 
+.logo a {
+  text-decoration: none;
+}
+
 .navigation a {
   font-size: 18;
-  margin-right: 15px;
+  margin-right: 10px;
   text-decoration: none;
 }
 
@@ -114,8 +118,14 @@ body {
   color: rgb(0, 66, 165);
 }
 
+.prj_title {
+  text-align: center;
+}
+
 h1 {
-  color: rgb(0, 66, 165);
+  color: #1d3557;
+  text-align: center;
+  margin: 10px;
 }
 
 .project h2 {
@@ -361,4 +371,9 @@ h1 {
 .tags_container {
   width: 100px;
   overflow-y: scroll;
+}
+
+.cal_day {
+  width: 100%;
+  border: 1px solid blue;
 }
