@@ -3,7 +3,6 @@ import { LoginButton } from "../auth0/login-button";
 import { LogoutButton } from "../auth0/logout-button";
 import { Link } from "react-router-dom";
 import Button from '@mui/material/Button';
-import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 
 function Navigation() {
     const { user, isAuthenticated } = useAuth0();
