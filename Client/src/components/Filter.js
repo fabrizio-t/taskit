@@ -29,6 +29,7 @@ function Filter({ id, token }) {
         if (e.target.tags.value !== '') params.push('tags=' + e.target.tags.value);
         const res = await apiSend('/projects/' + id + '/?' + params.join("&"), 'GET', token);
         dispatch({ type: 'Tsk_update', data: res.data });
+        toggleDialog();
     }
 
     return (

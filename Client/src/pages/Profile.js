@@ -3,7 +3,7 @@ import React from "react";
 import Tableview from '../components/Tableview.js'
 import { apiSend } from '../utils/services.js'
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+/* import { useSelector } from 'react-redux'; */
 
 function Projects() {
 
@@ -11,9 +11,9 @@ function Projects() {
     const [invites, setInvites] = useState({ data: [], user: {} });
 
     //Access Token
-    let token = useSelector(state => state.token);
 
-    const { user } = useAuth0();
+    const { user, getAccessTokenSilently } = useAuth0();
+    let [token, setToken] = useState(0);
 
     const toggleCollab = async (checked, project_id) => {
         let action = checked === false ? 'reject' : 'accept';
@@ -27,12 +27,14 @@ function Projects() {
 
     useEffect(() => {
         const getInvites = async () => {
-            const res = await apiSend('/invites', 'GET', token);
+            const t = await getAccessTokenSilently();
+            setToken(t);
+            const res = await apiSend('/invites', 'GET', t);
             console.log("API RESPONSE:", res);
             setInvites(res);
         }
         if (user) getInvites();
-    }, [user, token]);
+    }, [user, token, getAccessTokenSilently]);
 
     if (!user) {
         return null;

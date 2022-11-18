@@ -47,7 +47,6 @@ function Tasks() {
     let { _id } = useParams();
     //Config Redux state
     const projectTasks = useSelector(state => state.tasks);
-    let token = useSelector(state => state.token);
     const dispatch = useDispatch();
     //Dialog Window
     const [open, setOpen] = useState(false);
@@ -66,17 +65,22 @@ function Tasks() {
     //Invited members to the project
     const [tagList, setTagList] = useState([]);
     //OverAll rogress tracker
-    const [progress, setProgress] = useState('');
+    const [progress, setProgress] = useState(0);
     //Show Message box
     const msg = useSelector(state => state.msg);
     //Get user details from auth0
-    const { user } = useAuth0();
+    const { user, getAccessTokenSilently } = useAuth0();
+    /* let token = useSelector(state => state.token); */
+    let [token, setToken] = useState('');
 
     useEffect(() => {
         const initialize = async () => {
             try {
-                console.log("TOKEN:", token)
-                const res = await apiSend('/projects/' + _id, 'GET', token);
+                const t = await getAccessTokenSilently();
+                setToken(t);
+                /* dispatch({ type: 'Token', data: accessToken }); */
+                console.log("TOKEN:", t)
+                const res = await apiSend('/projects/' + _id, 'GET', t);
                 console.log("API RESPONSE:", res);
                 dispatch({ type: 'Tsk_update', data: res.data });
             }
@@ -84,16 +88,19 @@ function Tasks() {
                 console.log("ERROR:", e);
             }
         }
-        if (token) initialize();
-    }, [token, dispatch, _id]);
+        if (user) initialize();
+    }, [user, dispatch, _id, getAccessTokenSilently]);
 
     useEffect(() => {
         const computeProgress = () => {
             const completedTodos = projectTasks.tasks.map(task => task.tags.some(f => f.email === 'milestone') ? task.todos.filter(t => t.status === 'green').length : 0)
                 .reduce((partialSum, a) => partialSum + a, 0);
-            const totalTodos = projectTasks.tasks.map(task => task.tags.some(f => f.email === 'milestone') ? task.todos.length : 0)
-                .reduce((partialSum, a) => partialSum + a, 0);
-            setProgress(completedTodos / totalTodos * 100);
+            if (completedTodos > 0) {
+                const totalTodos = projectTasks.tasks.map(task => task.tags.some(f => f.email === 'milestone') ? task.todos.length : 0)
+                    .reduce((partialSum, a) => partialSum + a, 0);
+                setProgress(completedTodos / totalTodos * 100);
+            }
+            else setProgress(0);
         }
         computeProgress();
     }, [projectTasks]);
@@ -119,7 +126,7 @@ function Tasks() {
 
         const { name, deadline, color, priority } = form;
         console.log("saving date:", deadline.substr(0, deadline - 8));
-
+        console.log("<<<<<<<Saving task with token:", token)
         let data = null;
         if (!editMode.mode) data = await apiSend('/projects/' + _id, 'POST', token, { name, deadline, color, priority, todos: [], tags: tagList });
         else if (editMode.id) data = await apiSend('/projects/' + _id + '/task/' + editMode.id, 'PUT', token, { name, deadline, color, priority, tags: tagList });
@@ -282,10 +289,10 @@ function Tasks() {
                                 <input type="text" name="name" defaultValue={form.name} onChange={setValue}></input>
                                 <label>Deadline</label>
                                 <input type='datetime-local' name='deadline' defaultValue={form.deadline} onChange={setValue} />
-                                <label>Color</label>
-                                <input type='text' name='color' defaultValue={form.color} onChange={setValue}></input>
-                                <label>Priority</label>
-                                <select name="priority" onChange={setValue} defaultValue={form.priority}>
+                                <div className="hide">Color</div>
+                                <input className="hide" type='text' name='color' defaultValue={form.color} onChange={setValue}></input>
+                                <div className="hide">Priority</div>
+                                <select className="hide" name="priority" onChange={setValue} defaultValue={form.priority}>
                                     <option value={0}>Low</option>
                                     <option value={1}>Medium</option>
                                     <option value={2}>High</option>
@@ -336,9 +343,9 @@ function Tasks() {
             {view ?
                 <>
                     <Box sx={{ flexGrow: 1 }}>
-                        <Grid container spacing={1}>
+                        <Grid key="cal_container" container spacing={1}>
                             {Array.from(Array(30).keys()).map(i => (
-                                <Grid xs={12} sm={6} md={4} lg={3}>
+                                <Grid key={'cal_day_' + i} xs={12} sm={6} md={4} lg={3}>
                                     <div className="calendar_date">
                                         {getShortDate(new Date().setDate(new Date().getDate() + i))}
                                     </div>
@@ -356,13 +363,6 @@ function Tasks() {
                 </>
                 : ''
             }
-            <Box sx={{ flexGrow: 1 }}>
-                <Grid container spacing={1}>
-                    <Grid xs={12} sm={6} md={4} lg={3}>
-                        <div className="cal_day">xs=6 md=8</div>
-                    </Grid>
-                </Grid>
-            </Box>
             <Filter key="filter_dialog" id={_id} token={token} />
         </>
     );
@@ -398,8 +398,9 @@ function Task({ task, deleteTask, editTask, index, newTodo, editTodo, view }) {
                             <div><h3>{task.name}</h3></div>
                             <div>
                                 <Stack direction="row" spacing={0.5} sx={{ flexWrap: 'wrap', gap: 0.5 }}>
-                                    {task.tags.map(tag => (
+                                    {task.tags.map((tag, i) => (
                                         <Chip
+                                            key={'chip_' + i}
                                             color={tag.email === 'milestone' ? "primary" : "default"}
                                             variant="default"
                                             size="small"

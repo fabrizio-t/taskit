@@ -9,6 +9,7 @@ import { PageLoader } from "./pages/page-loader";
 import { Switch, Route } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import Navigation from './components/Navigation.js'
+import { ProtectedRoute } from "./components/protected-route";
 
 function App() {
 
@@ -32,9 +33,12 @@ function App() {
         <div className='content'>
           <Switch>
             <Route path="/" exact component={Home} />
-            <Route path="/projects/:_id" component={Tasks} />
-            <Route path="/projects" component={Projects} />
-            <Route path="/profile" component={Profile} />
+            {/* <Route path="/projects/:_id" component={Tasks} /> */}
+            <ProtectedRoute path="/projects/:_id" component={Tasks} />
+            {/* <Route path="/projects" component={Projects} /> */}
+            <ProtectedRoute path="/projects" component={Projects} />
+            {/* <Route path="/profile" component={Profile} /> */}
+            <ProtectedRoute path="/profile" component={Profile} />
             <Route path="/callback" component={CallbackPage} />
             <Route path="*" component={Home} />
           </Switch>

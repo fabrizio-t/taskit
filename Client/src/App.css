@@ -330,10 +330,9 @@ h1 {
   font-weight: bold;
 }
 
-.form {
-  /*   display: block; */
+/* .form {
   min-width: 300px;
-}
+} */
 
 .form input {
   height: 35px;
@@ -376,4 +375,12 @@ h1 {
 .cal_day {
   width: 100%;
   border: 1px solid blue;
+}
+
+.hide {
+  display: none;
+}
+
+.content img {
+  max-width: 100%;
 }

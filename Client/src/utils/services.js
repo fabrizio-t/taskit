@@ -25,7 +25,7 @@ export const formInitial = () => ({
     name: '',
     deadline: new Date().toISOString().slice(0, 16),
     color: '#ffffff',
-    priority: ''
+    priority: '2'
 });
 
 export function getShortDate(d) {
