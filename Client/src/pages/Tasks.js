@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
-import { apiSend, formInitial, getShortDate, getFullDate } from '../utils/services.js'
+import { apiSend, formInitial, getShortDate, getFullDate, helpTask } from '../utils/services.js'
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -40,6 +40,7 @@ import Stack from '@mui/material/Stack';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import ContactSupportIcon from '@mui/icons-material/ContactSupport';
 
 
 function Tasks() {
@@ -231,6 +232,12 @@ function Tasks() {
         setTagList((chips) => [...chips, { _id: Date.now(), email }]);
     };
 
+    const help = () => {
+        const title = 'How to use TasKit';
+        const descr = helpTask();
+        dispatch({ type: 'Msg', data: { title, descr } });
+    }
+
     if (!user) {
         return null;
     }
@@ -249,21 +256,19 @@ function Tasks() {
                         </Button>
                     </Link>
                 </div>
-
+                <div><Button color="success" onClick={help}><ContactSupportIcon /> Help</Button></div>
                 <div><Progress key="overall_progress" data={progress} /></div>
             </div>
             <div className="prj_title"><h1>{projectTasks.title}</h1></div>
             <div className="button_cnt">
                 <div><Button variant="contained" onClick={newTask}><AddIcon />New Task</Button></div>
                 <div>
-                    <ButtonGroup>
-                        <Button variant="contained" color="success" onClick={() => dispatch({ type: 'Open_filter', data: true })}><FilterAltIcon /></Button>
-                    </ButtonGroup>
                     <ButtonGroup
                         disableElevation
                         variant="contained"
                         aria-label="Disabled elevation buttons"
                     >
+                        <Button onClick={() => dispatch({ type: 'Open_filter', data: true })}><FilterAltIcon /></Button>
                         <Button onClick={() => setView(true)}><CalendarMonthIcon /></Button>
                         <Button onClick={() => setView(false)}><FormatListBulletedIcon /></Button>
                     </ButtonGroup>
@@ -392,7 +397,7 @@ function Task({ task, deleteTask, editTask, index, newTodo, editTodo, view }) {
                                     <Vmenu edit={editTask} del={deleteTask} id={task._id} />
                                     <User user={task.user}></User>
                                 </div>
-                                <div>{!view ? getFullDate(task.deadline) : ''}</div>
+                                <div>{!view ? getShortDate(task.deadline) : ''}</div>
                                 <div><Progress data={progressCalc} /></div>
                             </div>
                             <div><h3>{task.name}</h3></div>

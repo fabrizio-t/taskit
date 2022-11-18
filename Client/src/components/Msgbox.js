@@ -81,7 +81,7 @@ export default function Msgbox({ msg }) {
                 </BootstrapDialogTitle>
                 <DialogContent dividers>
                     <Typography gutterBottom>
-                        {message.descr}
+                        <div dangerouslySetInnerHTML={{ __html: message.descr }} />
                     </Typography>
                 </DialogContent>
                 <DialogActions>

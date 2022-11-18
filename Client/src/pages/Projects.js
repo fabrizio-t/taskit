@@ -1,6 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import React from "react";
-import { apiSend, registerUserAndGetProjects, getFullDate } from '../utils/services.js'
+import { apiSend, registerUserAndGetProjects, getFullDate, helpProject } from '../utils/services.js'
 import { Link } from "react-router-dom";
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
@@ -24,6 +24,7 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import ContactSupportIcon from '@mui/icons-material/ContactSupport';
 
 function Projects() {
     const projects = useSelector(state => state.projects);
@@ -160,6 +161,12 @@ function Projects() {
         }); */
     };
 
+    const help = () => {
+        const title = 'How to use TasKit';
+        const descr = helpProject();
+        dispatch({ type: 'Msg', data: { title, descr } });
+    }
+
     if (!user) {
         return null;
     }
@@ -172,6 +179,7 @@ function Projects() {
             }
             <div className="button_cnt">
                 <div><Button variant="contained" onClick={newProject}>New Project</Button></div>
+                <div><Button variant="contained" color="success" onClick={help}><ContactSupportIcon /> Help</Button></div>
             </div>
 
             <Dialog
