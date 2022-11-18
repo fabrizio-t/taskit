@@ -1,4 +1,3 @@
-import { useDispatch } from 'react-redux';
 
 const url = process.env.REACT_APP_API_SERVER_URL;
 /* const url = 'https://cw-events-092017.herokuapp.com' */
