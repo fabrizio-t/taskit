@@ -8,6 +8,7 @@ import { useDispatch } from 'react-redux';
 
 //------------------My components--------------------
 import Taglist from "./../components/Taglist";
+import Teamlist from "./../components/Avatar";
 import User from "./../components/User";
 import Vmenu from "./../components/Vmenu";
 import Adduser from "./../components/Adduser";
@@ -206,7 +207,7 @@ function Projects() {
                             <Adduser addToList={addToInviteList} type="user" />
                             <Taglist list={invitedList} deleteFromList={deleteInvite} />
                             <label>Team</label>
-                            <Taglist list={teamMembers} deleteFromList={deleteTeamMember} />
+                            <Teamlist list={teamMembers} deleteFromList={deleteTeamMember} />
                         </div>
                     </form>
                 </DialogContent>
