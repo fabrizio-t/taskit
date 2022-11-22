@@ -74,7 +74,7 @@ function Projects() {
     const newProject = () => {
         setForm(f => {
             f.title = '';
-            f.deadline = '';
+            f.deadline = new Date(Date.now() + 1000 * 60 * 60 * 24 * 30).toISOString().slice(0, 16);
             f.collabs = [];
             return f;
         });
