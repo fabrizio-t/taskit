@@ -16,7 +16,7 @@
 ## Installation
 
 ### Prerequisites
-Before installing the project, you need to have the following software installed on your machine:
+Before installing the app, you need to have the following software installed on your machine:
 - [Node.js](https://nodejs.org/en/download/)
 - [MongoDB](https://www.mongodb.com/download-center)
 
