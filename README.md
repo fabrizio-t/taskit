@@ -38,28 +38,52 @@ Except for the regular suspects; git, Node, npm, you need these things to work o
 
 ## Installation
 
-1. Clone this repo and enter!
+### Prerequisites
+Before installing the project, you need to have the following software installed on your machine:
+- Node.js
+- MongoDB
 
-   ```bash
-   git clone https://github.com/cherlin/trash-walk-frontend.git
-   cd trash-walk-frontend
-   ```
+### Setup
+1. Clone the repository
+```
+git clone https://github.com/your-username/TasKit.git
+```
+2. Navigate to the project's root directory
+```
+cd TasKit
+```
+3. Create a .env file in the root directory of the project
+```
+touch .env
+```
+4. Add the following environment variables to the `.env` file
+```
+PORT=
+CLIENT_ORIGIN_URL=
+AUTH0_AUDIENCE=
+AUTH0_DOMAIN=
+DB_USER=
+DB_PASSWORD=
+DB_URL=
+```
+5. Create a `.env` file in the `client` directory
+```
+cd client
+touch .env
+```
+6. Add the following environment variables to the `client/.env` file
+```
+REACT_APP_AUTH0_DOMAIN=
+REACT_APP_AUTH0_CLIENT_ID=
+REACT_APP_AUTH0_CALLBACK_URL=
+REACT_APP_API_SERVER_URL=
+REACT_APP_AUTH0_AUDIENCE=
+```
 
-2. Install dependencies.
-
-   ```bash
-   npm install
-   cd ios			# ! Change into the ios folder !
-   pod install
-   ```
-
-3. While in the ios folder, run ````exp start```` to start the Expo development environment that will build the JS bundle for your app.
-
-4. Run the **_trash-walk.xcworkspace_** file in Xcode (**NOT** the *trash-walk.xcodeproj*).
-
-5. Set up an **Identity** for the app under *General* in Xcode. You will need to pick a bundle name that will be unique to the particular certificate that you then have to generate under **Signing**
-
-6. Build the app! (click the Play-button in the top left corner when you have picked your target in the drop-down to the right of it.)
+7. Install project dependencies
+```
+npm install
+```
 
 ## Tech Stack
 
