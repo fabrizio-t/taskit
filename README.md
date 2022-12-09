@@ -16,7 +16,7 @@ Trash Walk is a mobile (iOS) app aimed at helping us make the world a cleaner pl
 ## Screenshots
 
 <p align="center">
-  <img src="images/9.png" />
+  <img src="images/10.png" />
 </p>
 
 
