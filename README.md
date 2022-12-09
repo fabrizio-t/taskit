@@ -5,7 +5,8 @@
 </p>
 
 <p>TasKit is a Progressive Web Application designed to help individuals and teams stay productive and organized. It features an intuitive interface for setting up projects, managing tasks and todo lists, tracking progress and filtering tasks by tags. The progress of the tasks which include the "milestone" tag will be accounted for calculating the overall progress of each project.</p>
-<p>A live demo of the app is available at: [TasKit.dev](https://taskit.dev)</p>
+<p>A live demo of the app is available at:</p>
+[TasKit.dev](https://taskit.dev)
 
 ## Screenshots
 
