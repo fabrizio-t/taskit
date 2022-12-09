@@ -3,7 +3,7 @@
 Toolkit to manage personal and team tasks
 
 <p align="center">
-  <img src="images/logo-readme-1.png" />
+  <img src="images/logo.png" />
 </p>
 
 
