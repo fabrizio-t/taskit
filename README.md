@@ -80,3 +80,5 @@ npm start
 - [MongoDB](https://www.mongodb.com/)
 - [Redux](https://redux.js.org/)
 
+## Licence
+This project is released under the [GNU General Public Licence (GPL)](https://www.gnu.org/licenses/gpl-3.0.en.html). This licence grants the users the right to freely use, modify and share the source code, but prohibits them from using it for commercial purposes without the express written permission of the authors.
