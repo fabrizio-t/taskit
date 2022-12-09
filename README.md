@@ -4,8 +4,7 @@
   <img src="images/logo.png" />
 </p>
 
-TasKit is a Progressive Web Application designed to help individuals and teams stay productive and organized. It features an intuitive interface for creating individual and team projects, managing tasks and todo lists, tracking progress, and filtering tasks by tags. The progress of the tasks which include the "milestone" tag will be accounted for calculating the overall progress of each project.
-TasKit is built with the latest tech stack of React, Node.js, and MongoDB, making it fast and reliable.
+TasKit is a Progressive Web Application designed to help individuals and teams stay productive and organized. It features an intuitive interface for setting up projects, managing tasks and todo lists, tracking progress and filtering tasks by tags. The progress of the tasks which include the "milestone" tag will be accounted for calculating the overall progress of each project.
 
 ## Screenshots
 
