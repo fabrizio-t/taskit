@@ -52,8 +52,9 @@ git clone https://github.com/your-username/TasKit.git
 ```
 cd TasKit
 ```
-3. Create a .env file in the root directory of the project
+3. Create a `.env` file in the `Server` directory of the project
 ```
+cd Server
 touch .env
 ```
 4. Add the following environment variables to the `.env` file
@@ -66,12 +67,20 @@ DB_USER=
 DB_PASSWORD=
 DB_URL=
 ```
-5. Create a `.env` file in the `client` directory
+5. Install project dependencies
 ```
-cd client
+npm install
+```
+6. Run the server
+```
+npm start
+```
+7. Create a `.env` file in the `Client` directory
+```
+cd ../Client
 touch .env
 ```
-6. Add the following environment variables to the `client/.env` file
+8. Add the following environment variables to the `.env` file
 ```
 REACT_APP_AUTH0_DOMAIN=
 REACT_APP_AUTH0_CLIENT_ID=
@@ -79,10 +88,13 @@ REACT_APP_AUTH0_CALLBACK_URL=
 REACT_APP_API_SERVER_URL=
 REACT_APP_AUTH0_AUDIENCE=
 ```
-
-7. Install project dependencies
+9. Install project dependencies
 ```
 npm install
+```
+6. Run the client
+```
+npm start
 ```
 
 ## Tech Stack
