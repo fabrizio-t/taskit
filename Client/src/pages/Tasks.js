@@ -74,6 +74,10 @@ function Tasks() {
     /* let token = useSelector(state => state.token); */
     let [token, setToken] = useState('');
 
+    let [startDate, setStartDate] = useState(Date.now());
+    let [endDate, setEndDate] = useState(Date.now() + 1000 * 60 * 60 * 24 * 30);
+    let [dayDiff, setDayDiff] = useState(30);
+
     useEffect(() => {
         const initialize = async () => {
             try {
@@ -104,7 +108,19 @@ function Tasks() {
             else setProgress(0);
         }
         computeProgress();
-    }, [projectTasks]);
+        if (projectTasks.tasks.length > 0) {
+            setStartDate(projectTasks.tasks[0].deadline);
+
+            setEndDate(projectTasks.tasks[projectTasks.tasks.length - 1].deadline);
+
+            const diff = Math.round(1 + (new Date(endDate).getTime() - new Date(startDate).getTime()) / (1000 * 3600 * 24));
+            setDayDiff(diff < 30 ? 30 : diff);
+            //setDayDiff(30);
+
+            console.log("N of Days", startDate, endDate, dayDiff);
+        }
+        console.log("TASKS HAVE CHANGED");
+    }, [projectTasks/* , startDate, endDate, dayDiff */]);
 
     //Open / Close Dialog Window
     const toggleDialog = () => {
@@ -349,13 +365,13 @@ function Tasks() {
                 <>
                     <Box sx={{ flexGrow: 1 }}>
                         <Grid key="cal_container" container spacing={1}>
-                            {Array.from(Array(30).keys()).map(i => (
+                            {Array.from(Array(dayDiff).keys()).map(i => (
                                 <Grid key={'cal_day_' + i} xs={12} sm={6} md={4} lg={3}>
                                     <div className="calendar_date">
-                                        {getShortDate(new Date().setDate(new Date().getDate() + i))}
+                                        {getShortDate(new Date(startDate).setDate(new Date(startDate).getDate() + i))}
                                     </div>
                                     <div className="calendar_cnt">
-                                        {projectTasks.tasks.filter(t => getShortDate(t.deadline) === getShortDate(new Date().setDate(new Date().getDate() + i))).map((t, i) => (
+                                        {projectTasks.tasks.filter(t => getShortDate(t.deadline) === getShortDate(new Date(startDate).setDate(new Date(startDate).getDate() + i))).map((t, i) => (
                                             <Task task={t} key={'c' + i} index={i} deleteTask={deleteTask} editTask={editTask} newTodo={newTodo} editTodo={editTodo} view={view} />
                                         )
                                         )}

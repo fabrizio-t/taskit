@@ -28,6 +28,7 @@ function Filter({ id, token }) {
         if (e.target.to.value !== '') params.push('to=' + e.target.to.value);
         if (e.target.tags.value !== '') params.push('tags=' + e.target.tags.value);
         const res = await apiSend('/projects/' + id + '/?' + params.join("&"), 'GET', token);
+        console.log("API RESPONSE:", res.data);
         dispatch({ type: 'Tsk_update', data: res.data });
         toggleDialog();
     }

@@ -5,6 +5,9 @@
   "dependencies": {
     "@auth0/auth0-react": "^1.12.0",
     "@auth0/auth0-spa-js": "^2.0.0",
+    "@capacitor/android": "^5.2.3",
+    "@capacitor/core": "^5.2.3",
+    "@capacitor/ios": "^5.2.3",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.10.9",
@@ -59,5 +62,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@capacitor/cli": "^5.2.3"
   }
 }
